@@ -1,0 +1,7 @@
+gov:
+  - gov.example.com
+  - ministry.gov
+first_responders:
+  - firedept.org
+  - ambulance.org
+  - police.org
