@@ -13,28 +13,10 @@ class AuthService {
     }
   }
 
-  private parseJwt(token: string): TokenPayload | null {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-          .join('')
-      );
-      return JSON.parse(jsonPayload);
-    } catch (error) {
-      console.error('Error parsing JWT:', error);
-      return null;
-    }
-  }
-
   private loadTokenPayload() {
     if (this.token) {
-      this.tokenPayload = this.parseJwt(this.token);
-      // Check if token is expired
-      if (this.tokenPayload && this.tokenPayload.exp * 1000 < Date.now()) {
+      this.tokenPayload = apiService.parseJwt(this.token);
+      if (this.token && apiService.isTokenExpired(this.token)) {
         console.log('Token expired, logging out');
         this.logout();
       }
@@ -65,7 +47,8 @@ class AuthService {
   // Authentication methods
   async signup(userData: UserSignup) {
     try {
-      return await apiService.signup(userData);
+      const response = await apiService.post('/auth/signup', userData);
+      return response.data;
     } catch (error) {
       console.error('Signup error:', error);
       throw error;
@@ -74,9 +57,10 @@ class AuthService {
 
   async login(loginData: UserLogin): Promise<Token> {
     try {
-      const token = await apiService.login(loginData);
+      const response = await apiService.post<Token>('/auth/login', loginData);
+      const token = response.data;
       
-      // Store token using consistent method
+      // Store token
       this.setToken(token.access_token);
       
       return token;
@@ -88,7 +72,12 @@ class AuthService {
 
   async getUserProfile(): Promise<UserProfile> {
     try {
-      return await apiService.getUserProfile();
+      if (!this.isAuthenticated()) {
+        throw new Error('No valid token available');
+      }
+
+      const response = await apiService.get<UserProfile>('/private/profile');
+      return response.data;
     } catch (error) {
       console.error('Get profile error:', error);
       throw error;
@@ -103,17 +92,19 @@ class AuthService {
   isAuthenticated(): boolean {
     const hasToken = !!this.token;
     const hasValidPayload = !!this.tokenPayload;
-    const isNotExpired = this.tokenPayload ? this.tokenPayload.exp * 1000 > Date.now() : false;
+    const isNotExpired = this.token ? !apiService.isTokenExpired(this.token) : false;
     
     const isAuth = hasToken && hasValidPayload && isNotExpired;
     
     if (!isAuth && hasToken) {
+      // Clean up invalid token
       this.logout();
     }
     
     return isAuth;
   }
 
+  // Role-based methods
   getUserRole(): UserRole | null {
     return this.tokenPayload?.role || null;
   }
@@ -125,6 +116,18 @@ class AuthService {
   hasAnyRole(roles: UserRole[]): boolean {
     const userRole = this.getUserRole();
     return userRole ? roles.includes(userRole) : false;
+  }
+
+  getUserId(): string | null {
+    return this.tokenPayload?.uid || null;
+  }
+
+  getUserName(): string | null {
+    return this.tokenPayload?.name || null;
+  }
+
+  getUserEmail(): string | null {
+    return this.tokenPayload?.email || null;
   }
 }
 

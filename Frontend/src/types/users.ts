@@ -21,13 +21,13 @@ export interface UserProfile {
   latitude: number;
   longitude: number;
   profile_image_url: string | null;
-  role: 'user' | 'volunteer' | 'first_responder' | 'government';
+  role: UserRole;
   created_at: string;
   skills?: string[];
   department?: string;
   unit?: string;
   position?: string;
-  status?: 'normal' | 'emergency';
+  status?: 'normal' |'banned' | 'emergency';
 }
 
 export interface UserLogin {
