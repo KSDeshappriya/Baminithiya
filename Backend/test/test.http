@@ -1,0 +1,72 @@
+### General User Signup
+POST http://localhost:8000/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Regular User",
+  "email": "user@example.com",
+  "password": "securepass123",
+  "phone": "+1010101010",
+  "role": "user"
+}
+
+### Volunteer Signup
+POST http://localhost:8000/auth/signup
+Content-Type: application/json
+
+{
+  "name": "John Volunteer",
+  "email": "john.volunteer@example.com",
+  "password": "securepass123",
+  "phone": "+1234567890",
+  "latitude": 40.7128,
+  "longitude": -74.0060,
+  "role": "volunteer",
+  "skills": ["first aid", "rescue"]
+}
+
+### First Responder Signup
+POST http://localhost:8000/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Alice Responder",
+  "email": "alice@police.org",
+  "password": "securepass123",
+  "phone": "+1987654321",
+  "role": "first_responder",
+  "department": "Emergency Services",
+  "unit": "Fire Department"
+}
+
+### Government Signup
+POST http://localhost:8000/auth/signup
+Content-Type: application/json
+
+{
+  "name": "Gov Officer",
+  "email": "officer@ministry.gov",
+  "password": "securepass123",
+  "phone": "+1122334455",
+  "role": "government",
+  "department": "Disaster Management",
+  "position": "Coordinator"
+}
+
+### Test the login endpoint for a correct password
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "securepass123",
+  "latitude": 37.7749,
+  "longitude": -122.4194
+}
+
+### Test Public Endpoint
+GET http://localhost:8000/public/status
+
+### Test getting user profile
+GET http://localhost:8000/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODU3Y2FmNTAwMDNkOWQ1YjQ0MCIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwibmFtZSI6IlJlZ3VsYXIgVXNlciIsImV4cCI6MTc1MDY5MzIxMn0.GUqYcSUndxUAR1F13z3datLVA9Wvdv7JuiXXfFq9-Dw
