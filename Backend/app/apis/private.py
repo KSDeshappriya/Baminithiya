@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.models.users import UserProfile
+from app.models.user import UserProfile
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.services.auth_service import AuthService
 

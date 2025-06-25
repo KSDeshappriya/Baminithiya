@@ -33,7 +33,7 @@ def load_disaster_model(path, device):
     return model
 
 def load_yolo_model():
-    return YOLO('../../model_weight/yolo.pt')
+    return YOLO('./.output_models/yolo.pt')
 
 def analyze_image_with_summary(image_input, disaster_model, yolo_model, device):
     transform = transforms.Compose([
@@ -63,5 +63,5 @@ def analyze_image_with_summary(image_input, disaster_model, yolo_model, device):
     return f"The image likely shows a {disaster.upper()} scene with {people} {'people' if people != 1 else 'person'} detected. (Confidence: {conf*100:.1f}%)"
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-disaster_model = load_disaster_model('./model_weight/cnn_model.pth', device)
+disaster_model = load_disaster_model('./.output_models/cnn_model.pth', device)
 yolo_model = load_yolo_model()

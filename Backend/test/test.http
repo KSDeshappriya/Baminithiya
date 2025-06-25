@@ -64,9 +64,131 @@ Content-Type: application/json
   "longitude": -122.4194
 }
 
+### Test the Gov login endpoint for a correct password
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "officer@ministry.gov",
+  "password": "securepass123",
+  "latitude": 37.7749,
+  "longitude": -122.4194
+}
+
 ### Test Public Endpoint
 GET http://localhost:8000/public/status
 
 ### Test getting user profile
 GET http://localhost:8000/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODU3Y2FmNTAwMDNkOWQ1YjQ0MCIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwibmFtZSI6IlJlZ3VsYXIgVXNlciIsImV4cCI6MTc1MDY5MzIxMn0.GUqYcSUndxUAR1F13z3datLVA9Wvdv7JuiXXfFq9-Dw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODVjMzFkZDAwMmVhNDYxNGJlNiIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwibmFtZSI6IlJlZ3VsYXIgVXNlciIsImV4cCI6MTc1MDk3ODg1N30.2sQjSyH7agpyWdEt3BHI-ix-RJyANs-aCKES6vkmmow
+
+### Nearby disasters
+GET http://localhost:8000/public/nearby?latitude=40.7128&longitude=-74.0060
+
+
+### Emergency Report Test
+POST http://localhost:8000/user/emergency/report
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODVjMzk1NjAwMzBjZGUxZTZlMCIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwibmFtZSI6IlJlZ3VsYXIgVXNlciIsImV4cCI6MTc1MDk4MTE0NX0.zKLmeuCAG1ClZDZ7_3XbcpW1bX41f3m2LBt9a6MVH_c
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="emergencyType"
+
+fire
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="urgencyLevel"
+
+high
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="situation"
+
+Building fire on 3rd floor
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="peopleCount"
+
+5
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="latitude"
+
+40.7128
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="longitude"
+
+-74.0060
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="fire.jpg"
+Content-Type: image/jpeg
+
+< ./fire.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+### Accept a disaster
+POST http://localhost:8000/gov/emergency/accept
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODVjMzIyYjAwMjNmMWY5ZTU5NCIsImVtYWlsIjoib2ZmaWNlckBtaW5pc3RyeS5nb3YiLCJyb2xlIjoiZ292ZXJubWVudCIsIm5hbWUiOiJHb3YgT2ZmaWNlciIsImV4cCI6MTc1MDk3OTA4MH0.ed77svqF10bMC_INwiRlS_hGZZT-Nfk05zx6IGY_MBc
+
+{
+  "disaster_id": "dr5r_1750872695_cf3dc4fa"
+}
+
+### Reject a disaster
+POST http://localhost:8000/gov/emergency/reject
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODVjMzIyYjAwMjNmMWY5ZTU5NCIsImVtYWlsIjoib2ZmaWNlckBtaW5pc3RyeS5nb3YiLCJyb2xlIjoiZ292ZXJubWVudCIsIm5hbWUiOiJHb3YgT2ZmaWNlciIsImV4cCI6MTc1MDk3OTA4MH0.ed77svqF10bMC_INwiRlS_hGZZT-Nfk05zx6IGY_MBc
+
+{
+  "disaster_id": "dr5r_1750872695_cf3dc4fa"
+}
+
+### Add resource to disaster
+POST http://localhost:8000/gov/resource/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODVjMzIyYjAwMjNmMWY5ZTU5NCIsImVtYWlsIjoib2ZmaWNlckBtaW5pc3RyeS5nb3YiLCJyb2xlIjoiZ292ZXJubWVudCIsIm5hbWUiOiJHb3YgT2ZmaWNlciIsImV4cCI6MTc1MDk3OTA4MH0.ed77svqF10bMC_INwiRlS_hGZZT-Nfk05zx6IGY_MBc
+
+{
+  "disasterId": "dr5r_1750872695_cf3dc4fa",
+  "data": {
+    "disaster_id": "dr5r_1750872695_cf3dc4fa",
+    "name": "Temporary Shelter",
+    "type": "shelter",
+    "description": "A shelter for displaced families",
+    "contact": "+94112223344",
+    "latitude": "6.9271",
+    "longitude": "79.8612",
+    "capacity": 100,
+    "availability": 80
+  }
+}
+
+### Delete a resource 
+DELETE  http://localhost:8000/gov/resource/delete
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODVjMzIyYjAwMjNmMWY5ZTU5NCIsImVtYWlsIjoib2ZmaWNlckBtaW5pc3RyeS5nb3YiLCJyb2xlIjoiZ292ZXJubWVudCIsIm5hbWUiOiJHb3YgT2ZmaWNlciIsImV4cCI6MTc1MDk3OTA4MH0.ed77svqF10bMC_INwiRlS_hGZZT-Nfk05zx6IGY_MBc
+
+{
+  "resource_id": "685c01b30032d5aa4bd8"
+}
+### Update resource availability
+PATCH http://localhost:8000/gov/resource/update-availability
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODVjMzIyYjAwMjNmMWY5ZTU5NCIsImVtYWlsIjoib2ZmaWNlckBtaW5pc3RyeS5nb3YiLCJyb2xlIjoiZ292ZXJubWVudCIsIm5hbWUiOiJHb3YgT2ZmaWNlciIsImV4cCI6MTc1MDk3OTA4MH0.ed77svqF10bMC_INwiRlS_hGZZT-Nfk05zx6IGY_MBc
+
+{
+  "resource_id": "685c01b30032d5aa4bd8",
+  "availability": 50
+}
+
+### Report an emergency for a fire-related disaster
+POST http://localhost:8000/user/emergency/request
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiI2ODU3Y2FmNTAwMDNkOWQ1YjQ0MCIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSIsInJvbGUiOiJ1c2VyIiwibmFtZSI6IlJlZ3VsYXIgVXNlciIsImV4cCI6MTc1MDk1MjY3OH0.0DdcdrOYuAfgBk-QKqTmNY_8xBScfcPOPOC7i_6J5-w
+
+{
+  "disasterId": "dr5r_1750872695_cf3dc4fa",
+  "help": "Trapped inside a burning building, need immediate rescue!",
+  "urgencyType": "high",
+  "latitude": "6.9271",
+  "longitude": "79.8612"
+}
+

@@ -41,6 +41,9 @@ class UserProfile(BaseUser):
     position: Optional[str] = None
     status: Optional[Status] = Status.NORMAL
 
+class DeleteUser(BaseModel):
+    user_id: str
+    
 class Token(BaseModel):
     access_token: str
     token_type: str

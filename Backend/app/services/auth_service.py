@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.models.users import UserSignup, UserLogin, UserProfile, Token, Status
+from app.models.user import UserSignup, UserLogin, UserProfile, Token, Status
 from app.services.jwt_service import JWTService
 from app.services.appwrite_service import AppwriteService
 import bcrypt
