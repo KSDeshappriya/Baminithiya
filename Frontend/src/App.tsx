@@ -1,11 +1,12 @@
 import SignIn from './pages/auth/signin';
 import SignUp from './pages/auth/signup';
-import { Routes, Route } from 'react-router';
+import { Routes, Route,Navigate } from 'react-router';
 import { 
   AuthRoute, 
   PublicRoute, 
 
 } from './components/ProtectedRoute';
+import Unauthorized from './pages/auth/Unauthorized';
 
 function App() {
   
@@ -30,6 +31,9 @@ function App() {
           <SignUp />
         </AuthRoute>
       } />
+            <Route path="/unauthorized" element={<Unauthorized />} />
+                  <Route path="/" element={<Navigate to="/public" replace />} />
+      <Route path="*" element={<Navigate to="/public" replace />} />
 </Routes>   
     </>
   )

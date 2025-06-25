@@ -55,7 +55,6 @@ const SignIn = () => {
       };
       const validatedData = userLoginSchema.parse(formDataWithLocation);
       await authService.login(validatedData);
-      // ...handle success (e.g., redirect)...
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMap: Record<string, string> = {};
