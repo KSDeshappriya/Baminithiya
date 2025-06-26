@@ -1,4 +1,4 @@
-import type { UserRole, UserSignup, UserLogin, UserProfile, Token, TokenPayload } from '../types/users';
+import type { UserRole, UserSignup, UserLogin,Token, TokenPayload } from '../types/users';
 import { apiService } from './api';
 
 class AuthService {
@@ -66,20 +66,6 @@ class AuthService {
       return token;
     } catch (error) {
       console.error('Login error:', error);
-      throw error;
-    }
-  }
-
-  async getUserProfile(): Promise<UserProfile> {
-    try {
-      if (!this.isAuthenticated()) {
-        throw new Error('No valid token available');
-      }
-
-      const response = await apiService.get<UserProfile>('/private/profile');
-      return response.data;
-    } catch (error) {
-      console.error('Get profile error:', error);
       throw error;
     }
   }
