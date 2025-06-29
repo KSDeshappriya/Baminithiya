@@ -3,10 +3,12 @@ import { z } from 'zod';
 import type {ChangeEvent, FormEvent} from 'react';
 import { userSignupSchema } from '../../schema/user';
 import { authService } from '../../services/auth';
+import { useNavigate } from 'react-router';
 
 type SignupFormData = z.infer<typeof userSignupSchema>;
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<Partial<SignupFormData>>({
     role: 'user'
   });
@@ -29,7 +31,7 @@ const SignUp = () => {
       
       const validatedData = userSignupSchema.parse(formDataToValidate);
       authService.signup(validatedData)
-      
+      navigate('/auth/signin/');
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMap: Record<string, string> = {};

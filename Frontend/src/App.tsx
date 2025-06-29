@@ -4,9 +4,14 @@ import { Routes, Route,Navigate } from 'react-router';
 import { 
   AuthRoute, 
   PublicRoute, 
-
-} from './components/ProtectedRoute';
+  PrivateRoute,
+  UserRoute
+} from './components/auth/ProtectedRoute';
 import Unauthorized from './pages/auth/Unauthorized';
+import { UserProfileComponent } from './pages/private/userProfile';
+import UserDashboard from './pages/user/userDashbord';
+import Home from './pages/public/Home';
+import { DisasterDetailsPage } from './pages/user/disasterDetails';
 
 function App() {
   
@@ -14,10 +19,30 @@ function App() {
     <>
 <Routes>
      {/* Public Routes */}
-      <Route path="/" element={
+      <Route path="/public/" element={
         <PublicRoute>
-          <h1>Public Content</h1>
+          <Home />
         </PublicRoute>
+      } />
+
+       {/* Private Routes */}
+      <Route path="/private/user-profile" element={
+        <PrivateRoute>
+          <UserProfileComponent />
+        </PrivateRoute>
+      } />
+
+      {/* Private Routes */}
+      <Route path="/user/" element={
+        <UserRoute>
+          <UserDashboard />
+        </UserRoute>
+      } />
+
+      <Route path="/user/disaster/:disasterId" element={
+        <UserRoute>
+          <DisasterDetailsPage />
+        </UserRoute>
       } />
 
       {/* Auth Routes */}

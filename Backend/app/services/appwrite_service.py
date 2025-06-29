@@ -9,6 +9,9 @@ from appwrite.id import ID
 from appwrite.query import Query
 import os
 from typing import Dict, Any, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class AppwriteService:
     def __init__(self):

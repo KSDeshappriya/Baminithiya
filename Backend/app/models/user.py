@@ -40,7 +40,9 @@ class UserProfile(BaseUser):
     unit: Optional[str] = None
     position: Optional[str] = None
     status: Optional[Status] = Status.NORMAL
-
+    latitude: float
+    longitude: float
+    
 class DeleteUser(BaseModel):
     user_id: str
     

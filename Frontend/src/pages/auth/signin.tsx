@@ -3,10 +3,12 @@ import { z } from 'zod';
 import type {ChangeEvent, FormEvent} from 'react';
 import { userLoginSchema } from '../../schema/user';
 import { authService } from '../../services/auth';
+import { useNavigate } from 'react-router';
 
 type LoginFormData = z.infer<typeof userLoginSchema>;
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<Partial<LoginFormData>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -54,7 +56,15 @@ const SignIn = () => {
         longitude: location.longitude,
       };
       const validatedData = userLoginSchema.parse(formDataWithLocation);
-      await authService.login(validatedData);
+      const token = await authService.login(validatedData);
+      if (token != null) {
+        const role = authService.getUserRole();
+        if (role === 'user') navigate('/user');
+        else if (role === 'volunteer') navigate('/volunteer');
+        else if (role === 'first_responder') navigate('/first_responder');
+        else if (role === 'government') navigate('/government');
+        else navigate('/public');
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMap: Record<string, string> = {};

@@ -15,7 +15,7 @@ export interface CreateDisasterRequest {
   emergencyType: EmergencyType;
   urgencyLevel: UrgencyLevel;
   situation: string;
-  peopleCount: number;
+  peopleCount: string;
   latitude: number;
   longitude: number;
   image: File;

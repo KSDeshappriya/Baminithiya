@@ -15,7 +15,6 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 import xml.etree.ElementTree as ET
 import math
-from appwrite.input_file import InputFile
 from appwrite.services.storage import Storage
 from app.services.appwrite_service import AppwriteService
 from dotenv import load_dotenv

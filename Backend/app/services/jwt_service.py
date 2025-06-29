@@ -3,6 +3,9 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import HTTPException
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class JWTService:
     def __init__(self):
