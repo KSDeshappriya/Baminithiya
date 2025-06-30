@@ -6,3 +6,4 @@ class EmergencyRequest(BaseModel):
     urgencyType: str
     latitude: str
     longitude: str
+    userId: str

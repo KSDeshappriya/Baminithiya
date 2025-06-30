@@ -139,7 +139,7 @@ def generate_emergency_task(state: EmergencyRequestState) -> EmergencyRequestSta
             "task_id": task_id,
             "description": ai_generated_description,
             "status": "pending",
-            "complete_by": "",
+            "action_done_by": "",
             "roles": valid_roles,
             "emergency_type": emergency_type,
             "urgency_level": urgency,
@@ -210,7 +210,7 @@ def generate_emergency_task(state: EmergencyRequestState) -> EmergencyRequestSta
             "task_id": task_id,
             "description": description,
             "status": "pending",
-            "complete_by": "",
+            "action_done_by": "",
             "roles": roles,
             "emergency_type": emergency_type,
             "urgency_level": urgency,
@@ -247,6 +247,7 @@ def save_user_request(state: EmergencyRequestState) -> EmergencyRequestState:
         "feedback": None,
         "assigned_roles": state["generated_task"]["roles"],
         "ai_reasoning": state["generated_task"].get("ai_reasoning", "No reasoning provided"),
+        "userId": state["user_id"],
     }
     try:
         appwrite_service.save_user_request_document(state["user_id"], user_request_data)
@@ -294,3 +295,15 @@ async def process_emergency_request(
     )
     result = await graph.ainvoke(initial_state)
     return result
+
+
+def delete_task_by_id(task_id: str):
+    """Delete a task document from the tasks collection by its ID."""
+    try:
+        appwrite_service.databases.delete_document(
+            database_id=appwrite_service.database_id,
+            collection_id=appwrite_service.tasks_collection_Id,
+            document_id=task_id
+        )
+    except Exception as e:
+        print(f"Failed to delete task {task_id}: {e}")

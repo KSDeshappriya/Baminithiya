@@ -1,13 +1,16 @@
-from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException, Query as FastAPIQuery
 from app.services.role_service import require_user
 from app.models.user import UserProfile
 from typing import Optional
-from app.services.third_workflow import process_emergency_request
+from app.services.third_workflow import process_emergency_request, delete_task_by_id
 from app.services.first_workflow import handle_emergency_report
 from app.models.userrequest import EmergencyRequest
+from app.services.appwrite_service import AppwriteService
 
 
 router = APIRouter(prefix="/user", tags=["Users"])
+
+appwrite_service = AppwriteService()
 
 
 @router.get("/dashboard")
@@ -102,3 +105,63 @@ async def report_emergency(
     except Exception as e:
         print(f"Unexpected error in report_emergency: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/emergency/request")
+async def get_user_request(
+    disasterId: str = FastAPIQuery(...),
+    userId: str = FastAPIQuery(...),
+    current_user: UserProfile = Depends(require_user)
+):
+    # Find the user request document by disasterId and userId
+    try:
+        from appwrite.query import Query
+        docs = appwrite_service.databases.list_documents(
+            database_id=appwrite_service.database_id,
+            collection_id=appwrite_service.user_requests_collection_id,
+            queries=[
+                Query.equal("disaster_id", disasterId),
+                Query.equal("userId", userId)
+            ]
+        )
+        if docs["total"] == 0:
+            return {"exists": False}
+        return {"exists": True, "request": docs["documents"][0]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch user request: {e}")
+
+
+@router.delete("/emergency/request")
+async def delete_user_request(
+    disasterId: str = FastAPIQuery(...),
+    userId: str = FastAPIQuery(...),
+    current_user: UserProfile = Depends(require_user)
+):
+    # Find the user request document by disasterId and userId
+    try:
+        from appwrite.query import Query
+        docs = appwrite_service.databases.list_documents(
+            database_id=appwrite_service.database_id,
+            collection_id=appwrite_service.user_requests_collection_id,
+            queries=[
+                Query.equal("disaster_id", disasterId),
+                Query.equal("userId", userId)
+            ]
+        )
+        if docs["total"] == 0:
+            raise HTTPException(status_code=404, detail="User request not found")
+        doc = docs["documents"][0]
+        # Delete the user request document
+        appwrite_service.delete_user_request_document(doc["$id"])
+        # Optionally, delete the associated task if task_id exists
+        task_id = doc.get("task_id")
+        if task_id:
+            try:
+                delete_task_by_id(task_id)
+            except Exception as e:
+                print(f"Warning: Failed to delete associated task: {e}")
+        return {"deleted": True}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete user request: {e}")

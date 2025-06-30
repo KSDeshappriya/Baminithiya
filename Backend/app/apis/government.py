@@ -7,6 +7,7 @@ from app.models.disaster import DisasterRequest
 from app.models.resource import ResourcePayload, DeleteResourceRequest, UpdateAvailabilityRequest
 from app.models.user import DeleteUser
 
+
 router = APIRouter(prefix="/gov", tags=["Government"])
 appwrite_service = AppwriteService()
 
@@ -67,3 +68,4 @@ async def delete_user(payload: DeleteUser, user: UserProfile = Depends(require_g
         return {"message": f"User {payload.user_id} deleted successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+

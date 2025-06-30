@@ -342,3 +342,30 @@ class AppwriteService:
             return documents.get('documents', [])
         except AppwriteException as e:
             raise Exception(f"Failed to query disasters: {e.message}")
+
+    def update_task_status(self, task_id: str, status: str, action_done_by: str = None) -> dict:
+        """Update the status (and optionally action_done_by) of a task document."""
+        try:
+            data = {"status": status}
+            if action_done_by:
+                data["action_done_by"] = action_done_by
+            document = self.databases.update_document(
+                database_id=self.database_id,
+                collection_id=self.tasks_collection_Id,
+                document_id=task_id,
+                data=data
+            )
+            return document
+        except AppwriteException as e:
+            raise Exception(f"Failed to update task status: {e.message}")
+
+    def delete_user_request_document(self, document_id: str):
+        """Delete a user request document from the user requests collection."""
+        try:
+            self.databases.delete_document(
+                database_id=self.database_id,
+                collection_id=self.user_requests_collection_id,
+                document_id=document_id
+            )
+        except AppwriteException as e:
+            raise Exception(f"Failed to delete user request: {e.message}")
