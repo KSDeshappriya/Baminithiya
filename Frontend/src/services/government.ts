@@ -23,6 +23,7 @@ class GovernmentService {
     return response.data;
   }
 
+
     async addResource(request: CreateResourceRequest)  {
     const response = await apiService.post(`${this.baseUrl}/resource/add`, request);
     return response.data;
@@ -38,6 +39,13 @@ class GovernmentService {
     return response.data;
   }
 
+  async getTasksByDisasterId(disasterId: string) {
+    const response = await apiService.get(`${this.baseUrl}/tasks/${disasterId}`);
+    return response.data;
+  }
+
+
 }
 
 export const governmentService = new GovernmentService()
+

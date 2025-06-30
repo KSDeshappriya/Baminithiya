@@ -44,7 +44,7 @@ export const AddDisasterComponent: React.FC = () => {
         image: formData.image as File
       });
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 30000);
+      window.location.reload(); // Refresh browser on success
     } catch (error) {
       setError('Failed to report emergency');
     } finally {

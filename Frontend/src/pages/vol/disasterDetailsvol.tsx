@@ -13,10 +13,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogPanel } from '@headlessui/react';
 import ReactMarkdown from 'react-markdown';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import EmergencyRequestComponent from '../../components/user/emergencyRequest';
 import ResourceMap from '../../components/public/ResourceMap';
+import TaskList from '../../components/public/tasksList';
 
 interface DisasterDocument {
     $id: string;
@@ -55,7 +54,7 @@ const StatusTypes = {
     default: { text: 'Unknown', color: 'bg-gray-500' }
 };
 
-export const DisasterDetailsUserPage: React.FC = () => {
+export const DisasterDetailsVol: React.FC = () => {
     const { disasterId } = useParams<{ disasterId: string }>();
     const [disaster, setDisaster] = useState<DisasterDocument | null>(null);
     const [loading, setLoading] = useState(true);
@@ -237,26 +236,23 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                     </div>
                                 )}
 
-                                {/* Location Tab */}
+                                {/* Location & Data Tab */}
                                 {selectedTab === 1 && (
-                                        <div className="space-y-6">
-                                            {/* Resource Map and List */}
-                                            <ResourceMap
-                                                disasterId={disaster.disaster_id}
-                                                disasterLocation={{ latitude: disaster.latitude, longitude: disaster.longitude }}
-                                                role="user"
-                                            />
-                                        </div>
-                                    
+                                    <div className="space-y-6">
+                                        {/* Resource Map and List */}
+                                        <ResourceMap
+                                            disasterId={disaster.disaster_id}
+                                            disasterLocation={{ latitude: disaster.latitude, longitude: disaster.longitude }}
+                                            role="public"
+                                        />
+                                    </div>
                                 )}
 
-                                {/* Actions Tab */}
+                                {/* Tasks Tab */}
                                 {selectedTab === 2 && (
                                     <div className="space-y-6">
-                                        <div>
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Request Emergency Assistance</h3>
-                                            {disasterId && <EmergencyRequestComponent disasterId={disasterId} />}
-                                        </div>
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Tasks</h3>
+                                        <TaskList disasterId={disaster.disaster_id} role="vol" />
                                     </div>
                                 )}
                             </div>

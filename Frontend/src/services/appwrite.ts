@@ -1,5 +1,6 @@
 import { Client, Account, Databases, Query } from 'appwrite';
 import { encode } from 'ngeohash';
+import type { UserProfile } from '../types/users';
 
 export interface AppwriteConfig {
   endpoint: string;
@@ -34,6 +35,17 @@ export interface TaskDocument {
   disaster_id: string;
   task_id: string;
   [key: string]: unknown;
+}
+
+export type UserProfileWithGeohash = UserProfile & { geohash: string };
+
+export interface Message {
+  $id: string;
+  user: string;
+  content: string;
+  timestamp: string;
+  avatar?: string;
+  report_id?: string;
 }
 
 export class AppwriteService {
@@ -259,6 +271,108 @@ export class AppwriteService {
       console.error(`Error querying disasters: ${errorMessage}`);
       return [];
     }
+  }
+
+  /**
+   * Get users (except government) by disaster geohash prefix (first 4 chars of disaster's geohash)
+   */
+  async getUsersByDisasterGeohash(disasterId: string): Promise<UserProfileWithGeohash[]> {
+    // Get the disaster document
+    const disaster = await this.getDisasterById(disasterId);
+    if (!disaster || typeof disaster.geohash !== 'string') {
+      throw new Error('Disaster or geohash not found');
+    }
+    const geohashPrefix = disaster.geohash.slice(0, 4);
+    // Query users whose geohash starts with this prefix and role != 'government'
+    const response = await this.databases.listDocuments(
+      this.databaseId,
+      this.usersCollectionId,
+      [
+        Query.startsWith('geohash', geohashPrefix),
+        Query.notEqual('role', 'government'),
+        Query.limit(100)
+      ]
+    );
+    // Return user info (uid, name, role, skills, department, unit, position, status, phone, email, profile_image_url, latitude, longitude, geohash)
+    return response.documents.map((user: unknown) => {
+      const u = user as UserProfile & { geohash: string, created_at: string };
+      return {
+        uid: u.uid,
+        name: u.name,
+        role: u.role,
+        skills: u.skills,
+        department: u.department,
+        unit: u.unit,
+        position: u.position,
+        status: u.status,
+        phone: u.phone,
+        email: u.email,
+        profile_image_url: u.profile_image_url,
+        latitude: u.latitude,
+        longitude: u.longitude,
+        geohash: u.geohash,
+        created_at: u.created_at,
+      };
+    });
+  }
+
+  /**
+   * Get chat messages (optionally by reportId)
+   */
+  async getMessages(reportId?: string | null): Promise<Message[]> {
+    const collectionId = import.meta.env.VITE_APPWRITE_MESSAGES_COLLECTION_ID;
+    const queries = reportId
+      ? [Query.equal("report_id", reportId), Query.orderAsc("timestamp"), Query.limit(100)]
+      : [Query.isNull("report_id"), Query.orderAsc("timestamp"), Query.limit(100)];
+    const response = await this.databases.listDocuments(
+      this.databaseId,
+      collectionId,
+      queries
+    );
+    return response.documents.map((doc: Record<string, unknown>) => ({
+      $id: doc.$id as string,
+      user: doc.user as string,
+      content: doc.content as string,
+      timestamp: doc.timestamp as string,
+      avatar: doc.avatar as string | undefined,
+      report_id: doc.report_id as string | undefined,
+    }));
+  }
+
+  /**
+   * Create a chat message
+   */
+  async createMessage(data: { user: string; content: string; timestamp: string; report_id?: string }): Promise<Message> {
+    const collectionId = import.meta.env.VITE_APPWRITE_MESSAGES_COLLECTION_ID;
+    const doc = await this.databases.createDocument(
+      this.databaseId,
+      collectionId,
+      'unique()',
+      data
+    );
+    return {
+      $id: doc.$id,
+      user: doc.user,
+      content: doc.content,
+      timestamp: doc.timestamp,
+      avatar: doc.avatar,
+      report_id: doc.report_id,
+    };
+  }
+
+  /**
+   * Subscribe to real-time chat messages
+   */
+  subscribeToMessages(callback: (message: Message) => void): () => void {
+    const collectionId = import.meta.env.VITE_APPWRITE_MESSAGES_COLLECTION_ID;
+    const databaseId = this.databaseId;
+    const channel = `databases.${databaseId}.collections.${collectionId}.documents`;
+    const unsubscribe = this.client.subscribe(channel, (response: { events: string[]; payload: Message }) => {
+      if (response.events.includes('databases.*.collections.*.documents.*.create')) {
+        callback(response.payload);
+      }
+    });
+    return unsubscribe;
   }
 }
 

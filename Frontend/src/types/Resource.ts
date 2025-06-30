@@ -1,4 +1,4 @@
-export type ResourceType = 'shelter' | 'medical' | 'rescue_team';
+export type ResourceType = 'shelter' | 'medical' | 'transportation';
 
 export interface CreateResourceRequest {
   disasterId: string;

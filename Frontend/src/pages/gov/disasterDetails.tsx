@@ -1,34 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate} from 'react-router';
 import { appwriteService } from '../../services/appwrite';
+import { governmentService } from '../../services/government';
 import {
     MapPinIcon,
     UserIcon,
-    BookOpenIcon,
     EyeIcon,
     ShareIcon,
     PrinterIcon,
     ChevronDownIcon,
-    XMarkIcon
+    XMarkIcon,
+    ClockIcon,
+    UsersIcon,
+    CpuChipIcon
 } from '@heroicons/react/24/outline';
 import { Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogPanel } from '@headlessui/react';
 import ReactMarkdown from 'react-markdown';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import EmergencyRequestComponent from '../../components/user/emergencyRequest';
+import TaskList from '../../components/public/tasksList';
 import ResourceMap from '../../components/public/ResourceMap';
 
 interface DisasterDocument {
     $id: string;
     disaster_id: string;
-    emergency_type?: string;
-    urgency_level?: string;
-    status?: string;
-    submitted_time?: number;
-    latitude?: number;
-    longitude?: number;
-    image_url?: string;
-    citizen_survival_guide?: string;
+    emergency_type: string;
+    urgency_level: string;
+    situation: string;
+    status: string;
+    submitted_time: number;
+    ai_processing_time: number;
+    latitude: number;
+    longitude: number;
+    geohash: string;
+    image_url: string;
+    government_report: string;
+    user_id: string;
+    people_count: string;
     image?: string;
     [key: string]: unknown;
 }
@@ -55,7 +62,7 @@ const StatusTypes = {
     default: { text: 'Unknown', color: 'bg-gray-500' }
 };
 
-export const DisasterDetailsUserPage: React.FC = () => {
+export const DisasterDetailsGovPage: React.FC = () => {
     const { disasterId } = useParams<{ disasterId: string }>();
     const [disaster, setDisaster] = useState<DisasterDocument | null>(null);
     const [loading, setLoading] = useState(true);
@@ -63,6 +70,9 @@ export const DisasterDetailsUserPage: React.FC = () => {
     const [imageError, setImageError] = useState(false);
     const [selectedTab, setSelectedTab] = useState(0);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+    const [archiveLoading, setArchiveLoading] = useState(false);
+    const [archiveError, setArchiveError] = useState<string | null>(null);
     const navigate = useNavigate();
     
 
@@ -80,7 +90,7 @@ export const DisasterDetailsUserPage: React.FC = () => {
                     setError('Disaster not found');
                     return;
                 }
-                setDisaster(data);
+                setDisaster(data as DisasterDocument);
             } catch (err: unknown) {
                 const errorMessage = err instanceof Error ? err.message : 'Unknown error';
                 setError('Failed to load disaster details: ' + errorMessage);
@@ -102,6 +112,15 @@ export const DisasterDetailsUserPage: React.FC = () => {
         return `${Math.floor(diff / 86400)}d ago`;
     };
 
+    const formatDateTime = (timestamp: number) => {
+        return new Date(timestamp * 1000).toLocaleString();
+    };
+
+    const formatProcessingTime = (milliseconds: number) => {
+        if (milliseconds < 1000) return `${milliseconds.toFixed(0)}s`;
+        return `${(milliseconds / 1000).toFixed(2)}s`;
+    };
+
     const handleShare = () => {
         if (navigator.share) {
             navigator.share({
@@ -118,6 +137,22 @@ export const DisasterDetailsUserPage: React.FC = () => {
         window.print();
     };
 
+    const handleArchive = async () => {
+        if (!disaster) return;
+        setArchiveLoading(true);
+        setArchiveError(null);
+        try {
+            await governmentService.rejectDisaster({ disaster_id: disaster.disaster_id });
+            setDisaster(prev => prev ? ({ ...prev, status: 'archived' } as DisasterDocument) : prev);
+            setIsArchiveModalOpen(false);
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to archive.';
+            setArchiveError(errorMessage);
+        } finally {
+            setArchiveLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <></>
@@ -125,7 +160,7 @@ export const DisasterDetailsUserPage: React.FC = () => {
     }
 
     if (error || !disaster) {
-        navigate('/user');
+        navigate('/gov');
         return null;
     }
 
@@ -137,13 +172,11 @@ export const DisasterDetailsUserPage: React.FC = () => {
     const tabs = [
         { name: 'Overview', icon: EyeIcon },
         { name: 'Resources', icon: MapPinIcon },
-        { name: 'Actions', icon: BookOpenIcon },
+        { name: 'Tasks', icon: CpuChipIcon },
     ];
 
     return (
         <div className="min-h-screen bg-gray-50">
-
-
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Main Layout Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -158,10 +191,8 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                         <h1 className="text-2xl font-bold text-gray-900 mb-1">{emergencyType.name}</h1>
                                     </div>
                                 </div>
-                               
+                            
                             </div>
-
-                           
                         </div>
 
                         {/* Tabs */}
@@ -186,6 +217,14 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                 {/* Overview Tab */}
                                 {selectedTab === 0 && (
                                     <div className="space-y-6">
+                                        {/* Situation Description */}
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Situation Report</h3>
+                                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                                <p className="text-gray-700 leading-relaxed">{disaster.situation}</p>
+                                            </div>
+                                        </div>
+
                                         {imageUrl && (
                                             <div>
                                                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Visual Evidence</h3>
@@ -209,14 +248,14 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                             </div>
                                         )}
 
-                                        {disaster.citizen_survival_guide && (
+                                        {disaster.government_report && (
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Emergency Survival Guide</h3>
+                                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Government Response Guide</h3>
                                                 <Disclosure defaultOpen={false}>
                                                     {({ open }) => (
                                                         <>
                                                             <DisclosureButton className="flex w-full justify-between rounded-lg bg-blue-50 px-4 py-3 text-left text-sm font-medium text-blue-900 hover:bg-blue-100 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75 transition-colors">
-                                                                <span>View Emergency Survival Guide</span>
+                                                                <span>View Government Response Guide</span>
                                                                 <ChevronDownIcon
                                                                     className={`${open ? 'transform rotate-180' : ''
                                                                         } w-5 h-5 text-blue-500 transition-transform`}
@@ -225,7 +264,7 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                                             <DisclosurePanel className="px-4 pb-2 pt-4 text-sm text-gray-700">
                                                                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                                                                     <div className="prose prose-blue max-w-none">
-                                                                        <ReactMarkdown>{disaster.citizen_survival_guide}</ReactMarkdown>
+                                                                        <ReactMarkdown>{disaster.government_report}</ReactMarkdown>
                                                                     </div>
                                                                 </div>
                                                             </DisclosurePanel>
@@ -237,26 +276,23 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                     </div>
                                 )}
 
-                                {/* Location Tab */}
+                                {/* Location & Data Tab */}
                                 {selectedTab === 1 && (
-                                        <div className="space-y-6">
-                                            {/* Resource Map and List */}
-                                            <ResourceMap
-                                                disasterId={disaster.disaster_id}
-                                                disasterLocation={{ latitude: disaster.latitude, longitude: disaster.longitude }}
-                                                role="user"
-                                            />
-                                        </div>
-                                    
+                                    <div className="space-y-6">
+                                        {/* Resource Map and List */}
+                                        <ResourceMap
+                                            disasterId={disaster.disaster_id}
+                                            disasterLocation={{ latitude: disaster.latitude, longitude: disaster.longitude }}
+                                            role="gov"
+                                        />
+                                    </div>
                                 )}
 
-                                {/* Actions Tab */}
+                                {/* Tasks Tab */}
                                 {selectedTab === 2 && (
                                     <div className="space-y-6">
-                                        <div>
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Request Emergency Assistance</h3>
-                                            {disasterId && <EmergencyRequestComponent disasterId={disasterId} />}
-                                        </div>
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Tasks</h3>
+                                        <TaskList disasterId={disaster.disaster_id} role="gov" />
                                     </div>
                                 )}
                             </div>
@@ -265,6 +301,34 @@ export const DisasterDetailsUserPage: React.FC = () => {
 
                     {/* Sidebar */}
                     <div className="lg:col-span-1 space-y-6">
+                        {/* Emergency Timeline */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Timeline</h3>
+                            <div className="space-y-4">
+                                <div className="flex items-start space-x-3">
+                                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <ClockIcon className="w-4 h-4 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-gray-900">Report Submitted</div>
+                                        <div className="text-xs text-gray-600">{formatDateTime(disaster.submitted_time)}</div>
+                                        <div className="text-xs text-gray-500">{formatTimeAgo(disaster.submitted_time)}</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-start space-x-3">
+                                    <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <CpuChipIcon className="w-4 h-4 text-purple-600" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-gray-900">AI Analysis Complete</div>
+                                        <div className="text-xs text-gray-600">
+                                            Processed in {formatProcessingTime(disaster.ai_processing_time)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Emergency Status */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Emergency Status</h3>
@@ -282,12 +346,20 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                         <span className="text-sm font-medium text-gray-900">{statusType.text}</span>
                                     </div>
                                 </div>
-                                {disaster.submitted_time && (
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium text-gray-700">Reported</span>
-                                        <span className="text-sm text-gray-900">{formatTimeAgo(disaster.submitted_time)}</span>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-gray-700">Affected People</span>
+                                    <div className="flex items-center">
+                                        <UsersIcon className="w-4 h-4 text-gray-500 mr-1" />
+                                        <span className="text-sm font-medium text-gray-900">{disaster.people_count}</span>
                                     </div>
-                                )}
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-sm font-medium text-gray-700">Reported by</span>
+                                    <div className="flex items-center">
+                                      
+                                        <span className="text-sm font-medium text-gray-900">{disaster.user_id}</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -302,6 +374,21 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                     <UserIcon className="w-4 h-4 mr-2" />
                                     Communication Hub
                                 </Link>
+                                <Link
+                                    to={`/gov/disaster/${disasterId}/aimetric`}
+                                    className="w-full flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+                                >
+                                    <CpuChipIcon className="w-4 h-4 mr-2" />
+                                    AI Metrics
+                                </Link>
+                                <button
+                                    onClick={() => setIsArchiveModalOpen(true)}
+                                    disabled={disaster.status === 'archived'}
+                                    className={`w-full flex items-center justify-center px-4 py-2 border border-yellow-600 rounded-lg text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 ${disaster.status === 'archived' ? 'bg-yellow-200 text-yellow-700 cursor-not-allowed' : 'bg-yellow-500 text-black hover:bg-yellow-600'}`}
+                                >
+                                    <XMarkIcon className="w-4 h-4 mr-2" />
+                                    Archive
+                                </button>
                                 <button
                                     onClick={handleShare}
                                     className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
@@ -316,6 +403,7 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                     <PrinterIcon className="w-4 h-4 mr-2" />
                                     Print Details
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -340,6 +428,36 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                 alt="Disaster evidence"
                                 className="w-full h-auto max-h-[80vh] object-contain rounded-xl"
                             />
+                        </div>
+                    </DialogPanel>
+                </div>
+            </Dialog>
+
+            {/* Archive Confirmation Modal */}
+            <Dialog open={isArchiveModalOpen} onClose={() => setIsArchiveModalOpen(false)} className="relative z-50">
+                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <DialogPanel className="mx-auto max-w-md w-full bg-white rounded-xl shadow-xl p-8">
+                        <div className="flex flex-col items-center">
+                            <XMarkIcon className="w-12 h-12 text-yellow-500 mb-4" />
+                            <h2 className="text-xl font-bold mb-2 text-gray-900">Confirm Archive</h2>
+                            <p className="text-gray-700 mb-6 text-center">Are you sure you want to <span className="font-semibold text-yellow-700">archive</span> this disaster report? This will mark it as <span className="font-semibold">Archived</span>.</p>
+                            {archiveError && <div className="text-red-500 mb-2">{archiveError}</div>}
+                            <div className="flex space-x-4 w-full">
+                                <button
+                                    onClick={handleArchive}
+                                    disabled={archiveLoading}
+                                    className="flex-1 px-4 py-2 rounded-lg bg-yellow-500 text-white font-semibold hover:bg-yellow-600 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                >
+                                    {archiveLoading ? 'Archiving...' : 'Confirm'}
+                                </button>
+                                <button
+                                    onClick={() => setIsArchiveModalOpen(false)}
+                                    className="flex-1 px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
                         </div>
                     </DialogPanel>
                 </div>

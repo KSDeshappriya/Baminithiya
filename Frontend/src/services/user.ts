@@ -27,6 +27,21 @@ async reportEmergency(request: CreateDisasterRequest){
 async requestHelp(request: CreateEmergencyRequest) {
     const response = await apiService.post(`${this.baseUrl}/emergency/request`, request);
     return response.data;
-}}
+}
+
+async getUserRequest(disasterId: string, userId: string) {
+    const response = await apiService.get(`${this.baseUrl}/emergency/request`, {
+      params: { disasterId, userId }
+    });
+    return response.data;
+}
+
+async deleteUserRequest(disasterId: string, userId: string) {
+    const response = await apiService.delete(`${this.baseUrl}/emergency/request`, {
+      params: { disasterId, userId }
+    });
+    return response.data;
+}
+}
 
 export const userService = new UserService();
