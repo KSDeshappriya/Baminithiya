@@ -4,7 +4,7 @@ import { ArrowPathIcon, ExclamationTriangleIcon, PlusIcon, DocumentTextIcon } fr
 import { appwriteService } from '../../services/appwrite';
 import type { Disaster, DisasterStatus, UrgencyLevel } from '../../types/disaster';
 import type { TaskDocument, ResourceDocument } from '../../services/appwrite';
-import { WorldMap } from '../../components/gov/WorldMap';
+import { WorldMap } from '../../components/private/WorldMap';
 
 export const GovernmentDashboard = () => {
   const [disasters, setDisasters] = useState<Disaster[]>([]);

@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { ArrowPathIcon, ExclamationTriangleIcon,DocumentTextIcon } from '@heroicons/react/24/outline';
 import { appwriteService } from '../../services/appwrite';
 import type { Disaster, DisasterStatus, UrgencyLevel } from '../../types/disaster';
-import { WorldMap } from '../../components/gov/WorldMap';
+import { WorldMap } from '../../components/private/WorldMap';
 
 export const VolunteerDashboard = () => {
   const [disasters, setDisasters] = useState<Disaster[]>([]);

@@ -17,8 +17,8 @@ import {
 import { Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogPanel } from '@headlessui/react';
 import ReactMarkdown from 'react-markdown';
 import 'leaflet/dist/leaflet.css';
-import TaskList from '../../components/public/tasksList';
-import ResourceMap from '../../components/public/ResourceMap';
+import TaskList from '../../components/private/tasksList';
+import ResourceMap from '../../components/private/ResourceMap';
 
 interface DisasterDocument {
     $id: string;

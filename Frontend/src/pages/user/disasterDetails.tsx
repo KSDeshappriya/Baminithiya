@@ -16,7 +16,7 @@ import ReactMarkdown from 'react-markdown';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import EmergencyRequestComponent from '../../components/user/emergencyRequest';
-import ResourceMap from '../../components/public/ResourceMap';
+import ResourceMap from '../../components/private/ResourceMap';
 
 interface DisasterDocument {
     $id: string;
