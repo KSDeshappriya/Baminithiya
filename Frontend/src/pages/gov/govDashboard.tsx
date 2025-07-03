@@ -103,186 +103,194 @@ export const GovernmentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Government Dashboard</h1>
-              <p className="text-gray-600">Monitor and manage disaster response operations</p>
-            </div>
-            <button
-              onClick={fetchDisasters}
-              disabled={loading}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 transition-all duration-200 shadow-sm hover:shadow-md"
-            >
-              <ArrowPathIcon className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Data
-            </button>
-          </div>
-        </div>
-
-        {/* --- Statistics Cards & Charts --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 flex flex-col items-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 mb-3">
-              <DocumentTextIcon className="w-7 h-7 text-blue-600" />
-            </div>
-            <div className="text-2xl font-bold text-blue-600">{totalTasks}</div>
-            <div className="text-gray-600 mt-1">Total Tasks</div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 flex flex-col items-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 mb-3">
-              <ArrowPathIcon className="w-7 h-7 text-green-600" />
-            </div>
-            <div className="text-2xl font-bold text-green-600">{completedTasks}</div>
-            <div className="text-gray-600 mt-1">Completed Tasks</div>
-          </div>
-          <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 flex flex-col items-center">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-indigo-100 mb-3">
-              <PlusIcon className="w-7 h-7 text-indigo-600" />
-            </div>
-            <div className="text-2xl font-bold text-indigo-600">{totalResources}</div>
-            <div className="text-gray-600 mt-1">Total Resources</div>
-          </div>
-        </div>
-        {/* World Map */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Global Disaster Map</h2>
-            <div className="text-sm text-gray-500">
-              {disasters.length} total disasters tracked
-            </div>
-          </div>
-          {loading ? (
-            <div className="h-96 bg-gray-100 rounded-lg animate-pulse flex items-center justify-center">
-              <div className="text-gray-500">Loading map...</div>
-            </div>
-          ) : (
-            <WorldMap ref={mapRef} disasters={disasters} activeTab={activeTab} />
-          )}
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 shadow-sm">
-            <div className="flex">
-              <ExclamationTriangleIcon className="w-5 h-5 text-red-400 mt-0.5 mr-3" />
-              <div className="text-sm text-red-700">{error}</div>
-            </div>
-          </div>
-        )}
-
-        {/* Tabs */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-          <div className="border-b border-gray-200 bg-gray-50">
-            <nav className="flex">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 py-4 px-6 text-sm font-medium text-center border-b-2 transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600 bg-white'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-100'
-                  }`}
-                >
-                  {tab.label}
-                  <span className={`ml-2 px-2 py-1 text-xs rounded-full transition-colors ${
-                    activeTab === tab.id ? 'bg-blue-100 text-blue-600' : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {tab.count}
-                  </span>
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          {/* Disaster List */}
-          <div className="p-6">
-            {loading ? (
-              <div className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="border border-gray-200 rounded-xl p-6 animate-pulse bg-gray-50">
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-1/4"></div>
-                  </div>
-                ))}
+    <div className="min-h-screen bg-gray-900">
+      {/* Ambient floating background elements for depth */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl -z-10" style={{ filter: 'blur(120px)' }} />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl -z-10" style={{ filter: 'blur(120px)' }} />
+      <section className="py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold text-white mb-2">Government Dashboard</h1>
+                <p className="text-gray-400">Monitor and manage disaster response operations</p>
               </div>
-            ) : filteredDisasters.length === 0 ? (
-              <div className="text-center py-12">
-                <ExclamationTriangleIcon className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No disasters found</h3>
-                <p className="text-gray-500">No disasters in the {activeTab} category.</p>
+              <button
+                onClick={fetchDisasters}
+                disabled={loading}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50"
+              >
+                <ArrowPathIcon className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh Data
+              </button>
+            </div>
+          </div>
+
+          {/* --- Statistics Cards & Charts --- */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 flex flex-col items-center hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-700/50 hover:scale-110 transition-transform duration-300 mb-3">
+                <DocumentTextIcon className="w-7 h-7 text-blue-400" />
+              </div>
+              <div className="text-2xl font-bold text-blue-400">{totalTasks}</div>
+              <div className="text-gray-400 mt-1">Total Tasks</div>
+            </div>
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 flex flex-col items-center hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-700/50 hover:scale-110 transition-transform duration-300 mb-3">
+                <ArrowPathIcon className="w-7 h-7 text-green-400" />
+              </div>
+              <div className="text-2xl font-bold text-green-400">{completedTasks}</div>
+              <div className="text-gray-400 mt-1">Completed Tasks</div>
+            </div>
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 flex flex-col items-center hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-700/50 hover:scale-110 transition-transform duration-300 mb-3">
+                <PlusIcon className="w-7 h-7 text-indigo-400" />
+              </div>
+              <div className="text-2xl font-bold text-indigo-400">{totalResources}</div>
+              <div className="text-gray-400 mt-1">Total Resources</div>
+            </div>
+          </div>
+          {/* World Map */}
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 mb-8 hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-white">Global Disaster Map</h2>
+              <div className="text-sm text-gray-400">
+                {disasters.length} total disasters tracked
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-96 bg-gray-900/50 rounded-lg animate-pulse flex items-center justify-center">
+                <div className="text-gray-500">Loading map...</div>
               </div>
             ) : (
-              <div className="space-y-6">
-                {filteredDisasters.map((disaster) => (
-                  <div
-                    key={disaster.$id}
-                    className="border border-gray-200 rounded-xl p-6 bg-white hover:shadow-lg transition-all duration-200 hover:border-gray-300 cursor-pointer"
-                    onClick={() => handleDisasterItemClick(disaster)}
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <h3 className="text-xl font-semibold text-gray-900 capitalize">
-                            {disaster.emergency_type} Emergency
-                          </h3>
-                          <span className={`px-3 py-1 text-xs font-medium rounded-full ${getUrgencyColor(disaster.urgency_level)}`}>
-                            {disaster.urgency_level?.toUpperCase()}
-                          </span>
-                        </div>
-                        <p className="text-gray-600 mb-4 text-sm leading-relaxed">{disaster.situation}</p>
-                        <div className="flex items-center gap-6 text-sm text-gray-500">
-                          <span className={`px-3 py-1 rounded-full text-xs border font-medium ${getStatusColor(disaster.status)}`}>
-                            {disaster.status.toUpperCase()}
-                          </span>
-                          <span className="text-gray-400">
-                            {new Date(disaster.submitted_time * 1000).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-100">
-                      {activeTab === 'active' && (
-                        <>
-                          <Link
-                            to={`/gov/disaster/${disaster.$id}/addResource`}
-                            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
-                          >
-                            <PlusIcon className="w-4 h-4 mr-2" />
-                            Add Resources
-                          </Link>
-                          <Link
-                            to={`/gov/disaster/${disaster.$id}`}
-                            className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md"
-                          >
-                            <DocumentTextIcon className="w-4 h-4 mr-2" />
-                            More Details
-                          </Link>
-                        </>
-                      )}
-                      {(activeTab === 'pending' || activeTab === 'archived') && (
-                        <Link
-                          to={`/gov/disaster/${disaster.$id}/report`}
-                          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-sm hover:shadow-md" >
-                          <DocumentTextIcon className="w-4 h-4 mr-2" />
-                          Report Details
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <WorldMap ref={mapRef} disasters={disasters} activeTab={activeTab} />
             )}
           </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-900/50 border border-red-700/50 rounded-xl p-4 mb-6 shadow-sm">
+              <div className="flex">
+                <ExclamationTriangleIcon className="w-5 h-5 text-red-400 mt-0.5 mr-3" />
+                <div className="text-sm text-red-300">{error}</div>
+              </div>
+            </div>
+          )}
+
+          {/* Tabs */}
+          <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl shadow-lg overflow-hidden">
+            <div className="border-b border-gray-700/50 bg-gray-900/50">
+              <nav className="flex">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 py-4 px-6 text-sm font-medium text-center border-b-2 transition-all duration-200 ${
+                      activeTab === tab.id
+                        ? 'border-blue-500 text-blue-400 bg-gray-900'
+                        : 'border-transparent text-gray-400 hover:text-white hover:border-gray-500 hover:bg-gray-800/70'
+                    }`}
+                  >
+                    {tab.label}
+                    <span className={`ml-2 px-2 py-1 text-xs rounded-full transition-colors ${
+                      activeTab === tab.id ? 'bg-blue-500/20 text-blue-300' : 'bg-gray-700/50 text-gray-400'
+                    }`}>
+                      {tab.count}
+                    </span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            {/* Disaster List */}
+            <div className="p-6">
+              {loading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="border border-gray-700/50 rounded-xl p-6 animate-pulse bg-gray-800/50 backdrop-blur-sm">
+                      <div className="h-4 bg-gray-700/50 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-700/50 rounded w-1/2 mb-2"></div>
+                      <div className="h-3 bg-gray-700/50 rounded w-1/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : filteredDisasters.length === 0 ? (
+                <div className="text-center py-12">
+                  <ExclamationTriangleIcon className="w-12 h-12 mx-auto text-gray-700 mb-4" />
+                  <h3 className="text-lg font-medium text-white mb-2">No disasters found</h3>
+                  <p className="text-gray-400">No disasters in the {activeTab} category.</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {filteredDisasters.map((disaster) => (
+                    <div
+                      key={disaster.$id}
+                      className="border border-gray-700/50 rounded-xl p-6 bg-gray-800/50 backdrop-blur-sm hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105 cursor-pointer"
+                      onClick={() => handleDisasterItemClick(disaster)}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <h3 className="text-xl font-semibold text-white capitalize">
+                              {disaster.emergency_type} Emergency
+                            </h3>
+                            <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${getUrgencyColor(disaster.urgency_level)}`}
+                              style={{ borderColor: 'rgba(59,130,246,0.3)' }}>
+                              {disaster.urgency_level?.toUpperCase()}
+                            </span>
+                          </div>
+                          <p className="text-gray-300 mb-4 text-sm leading-relaxed">{disaster.situation}</p>
+                          <div className="flex items-center gap-6 text-sm text-gray-400">
+                            <span className={`inline-block px-4 py-2 rounded-full text-xs font-medium border ${getStatusColor(disaster.status)}`}
+                              style={{ borderColor: 'rgba(59,130,246,0.3)' }}>
+                              {disaster.status.toUpperCase()}
+                            </span>
+                            <span className="text-gray-500">
+                              {new Date(disaster.submitted_time * 1000).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex gap-3 pt-4 border-t border-gray-700/50">
+                        {activeTab === 'active' && (
+                          <>
+                            <Link
+                              to={`/gov/disaster/${disaster.$id}/addResource`}
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                            >
+                              <PlusIcon className="w-4 h-4 mr-2" />
+                              Add Resources
+                            </Link>
+                            <Link
+                              to={`/gov/disaster/${disaster.$id}`}
+                              className="border border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800 px-8 py-4 rounded-lg transition-all duration-200 hover:border-gray-500 inline-flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                            >
+                              <DocumentTextIcon className="w-4 h-4 mr-2" />
+                              More Details
+                            </Link>
+                          </>
+                        )}
+                        {(activeTab === 'pending' || activeTab === 'archived') && (
+                          <Link
+                            to={`/gov/disaster/${disaster.$id}/report`}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                          >
+                            <DocumentTextIcon className="w-4 h-4 mr-2" />
+                            Report Details
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

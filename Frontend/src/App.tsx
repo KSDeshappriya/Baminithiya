@@ -11,7 +11,7 @@ import {
   FirstResponderRoute
 } from './components/auth/ProtectedRoute';
 import Unauthorized from './pages/auth/Unauthorized';
-import { UserProfileComponent } from './pages/private/userProfile';
+import UserProfilePage from './pages/private/userProfile';
 import UserDashboard from './pages/user/userDashbord';
 import Home from './pages/public/Home';
 import { DisasterDetailsUserPage } from './pages/user/disasterDetails';
@@ -25,11 +25,14 @@ import { VolunteerDashboard } from './pages/vol/voldashboard';
 import { DisasterDetailsVol } from './pages/vol/disasterDetailsvol';
 import { FirstRespondersDashboard } from './pages/fr/frdashboard';
 import { DisasterDetailsFr } from './pages/fr/disasterDetailsfr';
+import Navbar from './components/auth/Navbar';
+import Footer from './components/public/Footer';
 
 function App() {
   
   return (
     <>
+    <Navbar />
 <Routes>
      {/* Public Routes */}
       <Route path="/public/" element={
@@ -41,7 +44,7 @@ function App() {
        {/* Private Routes */}
       <Route path="/private/user-profile" element={
         <PrivateRoute>
-          <UserProfileComponent />
+          <UserProfilePage />
         </PrivateRoute>
       } />
 
@@ -101,7 +104,7 @@ function App() {
       } />
 
       {/* Volunteer Routes */}
-      <Route path="/volunteer/" element={
+      <Route path="/vol/" element={
         <VolunteerRoute>
           <VolunteerDashboard />
         </VolunteerRoute>
@@ -143,6 +146,8 @@ function App() {
                   <Route path="/" element={<Navigate to="/public" replace />} />
       <Route path="*" element={<Navigate to="/public" replace />} />
 </Routes>   
+      {/* Add Footer at the bottom */}
+      <Footer />
     </>
   )
 }

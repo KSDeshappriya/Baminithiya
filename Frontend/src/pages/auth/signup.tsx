@@ -51,12 +51,12 @@ const SignUp = () => {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Skills (comma separated)</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Skills (comma separated)</label>
               <input
                 type="text"
                 value={skills}
                 onChange={(e) => setSkills(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="e.g., First Aid, CPR, Search & Rescue"
               />
             </div>
@@ -66,24 +66,24 @@ const SignUp = () => {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Department</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Department</label>
               <input
                 type="text"
                 name="department"
                 value={formData.department || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Department"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Unit</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Unit</label>
               <input
                 type="text"
                 name="unit"
                 value={formData.unit || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Unit"
               />
             </div>
@@ -93,24 +93,24 @@ const SignUp = () => {
         return (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Department</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Department</label>
               <input
                 type="text"
                 name="department"
                 value={formData.department || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Department"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-2">Position</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Position</label>
               <input
                 type="text"
                 name="position"
                 value={formData.position || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Position"
               />
             </div>
@@ -122,66 +122,66 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full mx-auto">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">Sign Up</h2>
+    <div className="min-h-screen bg-gray-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full mx-auto bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-8 shadow-lg">
+        <h2 className="text-center text-3xl font-extrabold text-white mb-6">Sign Up</h2>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Name</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Name</label>
               <input
                 type="text"
                 name="name"
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Full Name"
               />
-              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+              {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Email</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Email</label>
               <input
                 type="email"
                 name="email"
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Email"
               />
-              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+              {errors.email && <p className="text-red-400 text-sm mt-1">{errors.email}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Phone</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Phone</label>
               <input
                 type="tel"
                 name="phone"
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Phone Number"
               />
-              {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+              {errors.phone && <p className="text-red-400 text-sm mt-1">{errors.phone}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Password</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Password</label>
               <input
                 type="password"
                 name="password"
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-500"
                 placeholder="Password"
               />
-              {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+              {errors.password && <p className="text-red-400 text-sm mt-1">{errors.password}</p>}
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Role</label>
+              <label className="block text-sm font-medium mb-2 text-gray-300">Role</label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700/50 rounded-md bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="user">User</option>
                 <option value="volunteer">Volunteer</option>
@@ -190,12 +190,12 @@ const SignUp = () => {
               </select>
             </div>
 
-            {renderRoleSpecificFields()}
+            {renderRoleSpecificFields && renderRoleSpecificFields()}
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className="w-full py-3 px-4 border border-transparent rounded-lg shadow-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-gray-900 font-medium text-lg transition-all duration-200"
           >
             Sign Up
           </button>
