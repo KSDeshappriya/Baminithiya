@@ -196,17 +196,6 @@ def government_analysis_ai_agent(state: EmergencyState) -> EmergencyState:
     - Specialized teams
     - Cost estimate
 
-    5. DEPLOYMENT DECISION
-    - Response level: Local/Regional/National
-    - Timeline
-    - Command structure
-
-    6. COORDINATION
-    - Agency requirements
-    - Communication protocols
-    - Public information
-    - Evacuation needs
-
     Format as government emergency report with actionable recommendations.
     """
 
@@ -251,39 +240,30 @@ def citizen_survival_ai_agent(state: EmergencyState) -> EmergencyState:
     TYPE: {state['emergencyType']}
     LOCATION: {state['latitude']}, {state['longitude']}
     WEATHER: {state['weather'].get('current_weather', {})}
-    PEOPLE COUNT: {state['peopleCount']} (expect more arrivals)
     """
 
     citizen_prompt = f"""
     {citizen_context}
 
-    Provide SURVIVAL INSTRUCTIONS for this specific {state['emergencyType']} disaster. Include:
+    Provide CONCISE SURVIVAL INSTRUCTIONS for {state['emergencyType']} disaster. Keep each point brief and specific:
 
     1. IMMEDIATE ACTIONS (next 30 minutes)
-    - Critical safety steps for {state['emergencyType']}
-    - Hazards to avoid
-    - Safe positioning
+    - List 3-5 critical safety steps
+    - Key hazards to avoid
+    - Best safe position/location
 
-    2. SITUATION PREDICTION
-    - What will happen in next 2-6 hours
-    - How conditions will change
-    - When situation peaks/improves
-    - Signs to watch for
+    2. SITUATION PREDICTION (next 2-6 hours)
+    - Expected conditions changes
+    - Peak danger timeframe
+    - Key warning signs to monitor
 
     3. SURVIVAL PRIORITIES
-    - {state['emergencyType']}-specific shelter needs
-    - Water/food considerations
-    - Medical concerns for this disaster
-    - Protection from elements
+    - Essential shelter requirements
+    - Water/food priorities
+    - Medical concerns specific to {state['emergencyType']}
+    - Protection needed from elements
 
-    4. MANAGING MORE PEOPLE
-    - Expect {state['peopleCount']}+ people arriving
-    - Group organization
-    - Resource sharing
-    - Crowd safety
-
-
-    Write in simple language. Focus on {state['emergencyType']} disaster survival. Be specific to current weather and location.
+    Use bullet points. Keep each point to 1-2 sentences maximum. Focus on actionable, specific guidance for {state['emergencyType']} in current conditions.
     """
 
     try:
