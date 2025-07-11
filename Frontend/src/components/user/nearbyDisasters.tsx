@@ -3,12 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, ArrowPathIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { appwriteService } from '../../services/appwrite';
 import { Link } from 'react-router';
+import { haversineDistance } from '../../utils/theme';
 
 export const NearbyDisastersComponent: React.FC = () => {
     const [disasters, setDisasters] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [geoError, setGeoError] = useState<string | null>(null);
     const [locationFetched, setLocationFetched] = useState(false);
+    const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
 
     const fetchNearbyDisasters = async (lat: number, lng: number) => {
         setLoading(true);
@@ -36,6 +38,7 @@ export const NearbyDisastersComponent: React.FC = () => {
             (position) => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
+                setUserLocation({ lat, lng });
                 setLocationFetched(true);
                 fetchNearbyDisasters(lat, lng);
             },
@@ -128,13 +131,17 @@ export const NearbyDisastersComponent: React.FC = () => {
                                     {disaster.urgency_level ? disaster.urgency_level.toUpperCase() : 'UNKNOWN'}
                                 </span>
                             </div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">{disaster.situation}</p>
                             <div className="flex items-center justify-between text-xs">
-                                <div className="flex items-center">
+                                <div className="flex items-center gap-2">
                                     <div className={`w-2 h-2 rounded-full mr-2 ${disaster.status === 'active' ? 'bg-green-500' : 'bg-gray-400 dark:bg-gray-500'}`}></div>
                                     <span className={`font-medium ${disaster.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'}`}> 
                                         Status: {disaster.status}
                                     </span>
+                                    {userLocation && typeof disaster.latitude === 'number' && typeof disaster.longitude === 'number' && (
+                                        <span className="ml-3 text-blue-600 dark:text-blue-300 font-semibold">
+                                            {haversineDistance(userLocation.lat, userLocation.lng, disaster.latitude, disaster.longitude).toFixed(1)} km away
+                                        </span>
+                                    )}
                                 </div>
                                 <span className="text-gray-400 dark:text-gray-500">
                                     {disaster.submitted_time ? new Date(disaster.submitted_time * 1000).toLocaleString() : 'Unknown time'}

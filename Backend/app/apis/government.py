@@ -15,13 +15,14 @@ appwrite_service = AppwriteService()
 @router.post("/emergency/accept")
 async def accept_disaster(payload: DisasterRequest, user: UserProfile = Depends(require_government)):
     try:
+        disaster = appwrite_service.get_disaster(payload.disaster_id)
+        current_status = disaster.get("status")
+        if current_status == "active":
+            return {"message": f"Disaster {payload.disaster_id} is already active. No action taken."}
         appwrite_service.update_disaster_status(payload.disaster_id, "active")
-        print(f"Disaster {payload.disaster_id} marked as active by {user.name}")
         graph = create_generate_disaster_task_graph()
-        await graph.invoke({"disaster_id": payload.disaster_id})
-        
+        graph.invoke({"disaster_id": payload.disaster_id})
         return {"message": f"Disaster {payload.disaster_id} marked as active."}
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
@@ -61,11 +62,3 @@ async def update_resource_availability(payload: UpdateAvailabilityRequest, user:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to update availability: {str(e)}")
     
-@router.delete("/user/delete")
-async def delete_user(payload: DeleteUser, user: UserProfile = Depends(require_government)):
-    try:
-        appwrite_service.delete_user(payload.user_id)
-        return {"message": f"User {payload.user_id} deleted successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
-

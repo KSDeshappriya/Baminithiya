@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { MagnifyingGlassIcon, ArrowPathIcon, ExclamationTriangleIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { appwriteService } from '../../services/appwrite';
 import PickLocation from './PickLocation';
+import { haversineDistance } from '../../utils/theme';
 
 export const NearbyDisastersComponent: React.FC = () => {
   const [disasters, setDisasters] = useState<any[]>([]);
@@ -144,11 +145,15 @@ export const NearbyDisastersComponent: React.FC = () => {
                     {disaster.urgency_level ? disaster.urgency_level.toUpperCase() : ''}
                   </span>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed text-sm transition-colors duration-300">{disaster.situation}</p>
-                <div className="flex items-center justify-between text-xs mb-2">
+               <div className="flex items-center justify-between text-xs mb-2">
                   <span className={`font-semibold ${disaster.status === 'active' ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'} transition-colors duration-300`}>Status: {disaster.status}</span>
                   <span className="text-gray-500 dark:text-gray-500">{disaster.submitted_time ? new Date(disaster.submitted_time * 1000).toLocaleString() : ''}</span>
                 </div>
+                {typeof disaster.latitude === 'number' && typeof disaster.longitude === 'number' && (
+                  <div className="text-xs text-blue-700 dark:text-blue-300 font-semibold mb-1">
+                    {haversineDistance(location.lat, location.lng, disaster.latitude, disaster.longitude).toFixed(1)} km away
+                  </div>
+                )}
               </div>
             ))}
           </div>

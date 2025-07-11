@@ -7,6 +7,7 @@ from appwrite.input_file import InputFile
 from appwrite.exception import AppwriteException
 from appwrite.id import ID
 from appwrite.query import Query
+from appwrite.id import ID
 import os
 from typing import Dict, Any, Optional
 from dotenv import load_dotenv
@@ -235,6 +236,8 @@ class AppwriteService:
             return document
         except AppwriteException as e:
             raise Exception(f"Failed to save task document: {e.message}")
+        except Exception as e:
+            raise
     
     def list_resources_for_disaster(self, disaster_id: str) -> list:
         """List resources for a given disaster_id from the resources collection."""
@@ -280,7 +283,6 @@ class AppwriteService:
 
     def add_resource_to_disaster(self, disaster_id: str, resource_data: dict) -> dict:
         """Add a resource document to the resources collection for a disaster."""
-        from appwrite.id import ID
         try:
             data = {"disaster_id": disaster_id, **resource_data}
             document = self.databases.create_document(

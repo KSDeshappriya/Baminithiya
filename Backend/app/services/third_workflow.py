@@ -61,7 +61,6 @@ def fetch_nearby_resources(state: EmergencyRequestState) -> EmergencyRequestStat
         nearby_resources.sort(key=lambda x: x.get("distance", float("inf")))
         return {**state, "nearby_resources": nearby_resources[:5]}
     except Exception as e:
-        print(f"Error fetching resources: {e}")
         return {**state, "nearby_resources": []}
 
 
@@ -155,7 +154,6 @@ def generate_emergency_task(state: EmergencyRequestState) -> EmergencyRequestSta
         }
         return {**state, "generated_task": task}
     except Exception as e:
-        print(f"Error generating AI task: {e}")
         try:
             fallback_prompt = f"""
             Emergency: {help_needed}
@@ -227,10 +225,30 @@ def generate_emergency_task(state: EmergencyRequestState) -> EmergencyRequestSta
 
 
 def save_task_to_db(state: EmergencyRequestState) -> EmergencyRequestState:
+    user_id = state["user_id"]
+    disaster_id = state["disaster_id"]
+    # Delete any existing tasks for this user and disaster before saving the new one
+    try:
+        existing_tasks = appwrite_service.list_tasks_by_user_and_disaster(user_id, disaster_id)
+        for task in existing_tasks:
+            task_id = task.get("$id") or task.get("task_id")
+            # Only delete if first_Task is False (or missing)
+            if task_id and not task.get("first_Task", False):
+                try:
+                    appwrite_service.databases.delete_document(
+                        database_id=appwrite_service.database_id,
+                        collection_id=appwrite_service.tasks_collection_Id,
+                        document_id=task_id
+                    )
+                except Exception as e:
+                    pass
+    except Exception as e:
+        pass
+    # Now save the new task
     try:
         appwrite_service.save_task_document(state["generated_task"])
     except Exception as e:
-        print(f"Error saving task: {e}")
+        pass
     return state
 
 
@@ -256,28 +274,11 @@ def save_user_request(state: EmergencyRequestState) -> EmergencyRequestState:
         try:
             appwrite_service.delete_user_request_document(user_id)
         except Exception as e:
-            # It's okay if there was no previous request
             pass
-        # Delete any existing tasks for this user and disaster
-        try:
-            existing_tasks = appwrite_service.list_tasks_by_user_and_disaster(user_id, disaster_id)
-            for task in existing_tasks:
-                task_id = task.get("$id") or task.get("task_id")
-                if task_id:
-                    try:
-                        appwrite_service.databases.delete_document(
-                            database_id=appwrite_service.database_id,
-                            collection_id=appwrite_service.tasks_collection_Id,
-                            document_id=task_id
-                        )
-                    except Exception as e:
-                        print(f"Error deleting task {task_id}: {e}")
-        except Exception as e:
-            print(f"Error listing/deleting tasks for user {user_id} and disaster {disaster_id}: {e}")
         # Save the new request with user_id as the document ID
         appwrite_service.save_user_request_document(user_id, user_request_data)
     except Exception as e:
-        print(f"Error saving user request: {e}")
+        pass
     return {**state, "user_request_data": user_request_data}
 
 
@@ -331,4 +332,4 @@ def delete_task_by_id(task_id: str):
             document_id=task_id
         )
     except Exception as e:
-        print(f"Failed to delete task {task_id}: {e}")
+        pass

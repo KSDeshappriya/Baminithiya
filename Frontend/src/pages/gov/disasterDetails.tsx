@@ -17,13 +17,16 @@ import {
     ArrowPathIcon,
     ArchiveBoxIcon,
     DocumentTextIcon,
-    CpuChipIcon
+    CpuChipIcon,
+    MapPinIcon
 } from '@heroicons/react/24/outline';
 import { Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogPanel } from '@headlessui/react';
 import ReactMarkdown from 'react-markdown';
 import 'leaflet/dist/leaflet.css';
 import ResourceMap from '../../components/private/ResourceMap';
 import TaskList from '../../components/private/tasksList';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import L from 'leaflet';
 
 interface DisasterDocument {
     $id: string;
@@ -75,6 +78,8 @@ export const DisasterDetailsGovPage: React.FC = () => {
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
     const [archiveLoading, setArchiveLoading] = useState(false);
     const [archiveError, setArchiveError] = useState<string | null>(null);
+    const [weatherLayerType, setWeatherLayerType] = useState('precipitation_new');
+    const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
     
     useEffect(() => {
         const fetchDisasterDetails = async () => {
@@ -347,6 +352,69 @@ export const DisasterDetailsGovPage: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 )}
+                                            </div>
+                                        )}
+                                        {/* Disaster Location Map */}
+                                        {typeof disaster.latitude === 'number' && typeof disaster.longitude === 'number' && (
+                                            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-700 mt-8">
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                                                    <MapPinIcon className="w-5 h-5 mr-2" />
+                                                    Disaster Location
+                                                </h3>
+                                                {/* Weather Layer Select */}
+                                                {apiKey && (
+                                                    <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2">
+                                                        <label htmlFor="map-layer" className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1 sm:mb-0 sm:mr-3 whitespace-nowrap">
+                                                            Weather Overlay
+                                                        </label>
+                                                        <div className="relative w-full sm:w-auto">
+                                                            <select
+                                                                id="map-layer"
+                                                                value={weatherLayerType}
+                                                                onChange={e => setWeatherLayerType(e.target.value)}
+                                                                className="appearance-none w-full pl-10 pr-8 py-2 rounded-lg border border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 font-medium hover:border-blue-400 dark:hover:border-blue-400 cursor-pointer"
+                                                            >
+                                                                <option value="precipitation_new">🌧️ Precipitation – Floods, Storms</option>
+                                                                <option value="wind_new">💨 Wind – Storms, Fire Spread</option>
+                                                                <option value="temp_new">🌡️ Temperature – Heatwaves, Wildfires</option>
+                                                                <option value="clouds_new">☁️ Clouds – General Weather</option>
+                                                            </select>
+                                                            {/* Custom dropdown arrow */}
+                                                            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                                                <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8 10l4 4 4-4" /></svg>
+                                                            </div>
+                                                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                                                                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                <div className="h-64 rounded-lg overflow-hidden border border-gray-300">
+                                                    <MapContainer center={[disaster.latitude, disaster.longitude]} zoom={13} style={{ height: '100%', width: '100%' }} scrollWheelZoom={true}>
+                                                        <TileLayer
+                                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                                        />
+                                                        {apiKey && (
+                                                            <TileLayer
+                                                                url={`https://tile.openweathermap.org/map/${weatherLayerType}/{z}/{x}/{y}.png?appid=${apiKey}`}
+                                                                attribution='&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
+                                                                opacity={0.6}
+                                                            />
+                                                        )}
+                                                        <Marker 
+                                                            position={[disaster.latitude, disaster.longitude]} 
+                                                            icon={L.icon({
+                                                                iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                                                                iconSize: [25, 41],
+                                                                iconAnchor: [12, 41],
+                                                                popupAnchor: [1, -34],
+                                                                shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                                                                shadowSize: [41, 41],
+                                                            })} 
+                                                        />
+                                                    </MapContainer>
+                                                </div>
                                             </div>
                                         )}
 

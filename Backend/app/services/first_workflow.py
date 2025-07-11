@@ -156,31 +156,58 @@ def government_analysis_ai_agent(state: EmergencyState) -> EmergencyState:
     img_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
     government_context = f"""
-    EMERGENCY SITUATION REPORT FOR GOVERNMENT RESPONSE TEAM
-    
-    Basic Information:
-    - Emergency Type: {state['emergencyType']}
-    - Urgency Level: {state['urgencyLevel']}
-    - Situation Description: {state['situation']}
-    - People Affected: {state['peopleCount']}
-    - GPS Coordinates: {state['latitude']}, {state['longitude']}
-    
-    AI Analysis Results: {state['cnn_result']}
-    Weather Data: {state['weather']}
-    Historical Disasters (GDAC): {state['gdac_disasters']}
+    EMERGENCY REPORT - GOVERNMENT RESPONSE TEAM
+
+    TYPE: {state['emergencyType']}
+    URGENCY: {state['urgencyLevel']}
+    SITUATION: {state['situation']}
+    AFFECTED: {state['peopleCount']}
+    LOCATION: {state['latitude']}, {state['longitude']}
+    AI ANALYSIS: {state['cnn_result']}
+    WEATHER: {state['weather']}
+    HISTORICAL: {state['gdac_disasters']}
     """
 
     gov_prompt = f"""
     {government_context}
-    
-    You are analyzing this emergency for GOVERNMENT RESPONSE COORDINATION. Create a comprehensive government report with:
-    1. THREAT ASSESSMENT & SEVERITY SCALE (1-10)
-    2. FUTURE PROJECTIONS
-    3. RESOURCE REQUIREMENTS
-    4. DEPLOYMENT DECISION
-    5. COORDINATION RECOMMENDATIONS
-    
-    Format as a formal government emergency response report.
+
+    Analyze for government response. Provide:
+
+    1. THREAT VERIFICATION
+    - Genuine/False alarm assessment
+    - Data source cross-check
+    - Confidence: High/Medium/Low
+
+    2. SEVERITY SCALE (1-10)
+    - Rating with justification
+    - Historical comparison
+    - Impact assessment
+
+    3. FUTURE PROJECTIONS
+    - 6-24 hours
+    - 1-7 days  
+    - 1-4 weeks
+    - Best/worst/likely scenarios
+    - Critical decision points
+
+    4. RESOURCE REQUIREMENTS
+    - Personnel needs
+    - Equipment/supplies
+    - Specialized teams
+    - Cost estimate
+
+    5. DEPLOYMENT DECISION
+    - Response level: Local/Regional/National
+    - Timeline
+    - Command structure
+
+    6. COORDINATION
+    - Agency requirements
+    - Communication protocols
+    - Public information
+    - Evacuation needs
+
+    Format as government emergency report with actionable recommendations.
     """
 
     try:
@@ -220,23 +247,43 @@ def citizen_survival_ai_agent(state: EmergencyState) -> EmergencyState:
     img_b64 = base64.b64encode(image_bytes).decode("utf-8")
 
     citizen_context = f"""
-    CITIZEN SITUATION:
-    - Emergency Type: {state['emergencyType']}
-    - Your Location: {state['latitude']}, {state['longitude']}
-    - Current Weather: {state['weather'].get('current_weather', {})}
-    - Number of People with You: {state['peopleCount']}
+    EMERGENCY SITUATION:
+    TYPE: {state['emergencyType']}
+    LOCATION: {state['latitude']}, {state['longitude']}
+    WEATHER: {state['weather'].get('current_weather', {})}
+    PEOPLE COUNT: {state['peopleCount']} (expect more arrivals)
     """
 
     citizen_prompt = f"""
     {citizen_context}
-    
-    You are providing SURVIVAL INSTRUCTIONS for civilians in this emergency situation. Create a practical survival guide with:
-    1. IMMEDIATE SAFETY ACTIONS (next 30 minutes)
-    2. WHAT TO EXPECT
-    3. SHELTER & PROTECTION
-    4. COMMUNICATION & SIGNALING
-    
-    Write in simple, clear language that anyone can understand.
+
+    Provide SURVIVAL INSTRUCTIONS for this specific {state['emergencyType']} disaster. Include:
+
+    1. IMMEDIATE ACTIONS (next 30 minutes)
+    - Critical safety steps for {state['emergencyType']}
+    - Hazards to avoid
+    - Safe positioning
+
+    2. SITUATION PREDICTION
+    - What will happen in next 2-6 hours
+    - How conditions will change
+    - When situation peaks/improves
+    - Signs to watch for
+
+    3. SURVIVAL PRIORITIES
+    - {state['emergencyType']}-specific shelter needs
+    - Water/food considerations
+    - Medical concerns for this disaster
+    - Protection from elements
+
+    4. MANAGING MORE PEOPLE
+    - Expect {state['peopleCount']}+ people arriving
+    - Group organization
+    - Resource sharing
+    - Crowd safety
+
+
+    Write in simple language. Focus on {state['emergencyType']} disaster survival. Be specific to current weather and location.
     """
 
     try:

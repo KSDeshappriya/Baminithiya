@@ -34,7 +34,6 @@ export const AddDisasterComponent: React.FC = () => {
   const [locationObtained, setLocationObtained] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isFormValid, setIsFormValid] = useState(false);
-  const [minWaitOver, setMinWaitOver] = useState(false); // New state for minimum wait
 
   // Real-time form validation
   useEffect(() => {
@@ -111,14 +110,7 @@ export const AddDisasterComponent: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setMinWaitOver(false);
 
-    // Start 60s timer
-    const timer = setTimeout(() => {
-      setMinWaitOver(true);
-    }, 60000);
-
-    let backendSuccess = false;
     try {
       // Simulate network delay for better UX
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -132,30 +124,13 @@ export const AddDisasterComponent: React.FC = () => {
         image: formData.image as File
       });
       setSuccess(true);
-      backendSuccess = true;
+      setLoading(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch {
       setError('Failed to report emergency. Please try again.');
-    } finally {
-      // Wait for both backend and minWaitOver
-      const waitForBoth = async () => {
-        if (!minWaitOver) {
-          await new Promise(resolve => {
-            const check = () => {
-              if (minWaitOver) resolve(null);
-              else setTimeout(check, 200);
-            };
-            check();
-          });
-        }
-        setLoading(false);
-        clearTimeout(timer);
-        if (backendSuccess) {
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        }
-      };
-      waitForBoth();
+      setLoading(false);
     }
   };
 

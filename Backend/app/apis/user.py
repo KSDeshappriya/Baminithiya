@@ -6,7 +6,7 @@ from app.services.third_workflow import process_emergency_request, delete_task_b
 from app.services.first_workflow import handle_emergency_report
 from app.models.userrequest import EmergencyRequest
 from app.services.appwrite_service import AppwriteService
-
+from appwrite.query import Query
 
 router = APIRouter(prefix="/user", tags=["Users"])
 
@@ -61,11 +61,9 @@ async def report_emergency(
         urgencyType = body.urgencyType
         latitude = body.latitude
         longitude = body.longitude
-        
         # Validate required fields
         if not all([disasterId, help, urgencyType, latitude, longitude]):
             raise HTTPException(status_code=400, detail="All fields are required")
-
         # Validate coordinates
         try:
             lat = float(latitude)
@@ -74,11 +72,9 @@ async def report_emergency(
                 raise ValueError("Invalid coordinates")
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid latitude or longitude")
-
         # Validate urgency type
         if urgencyType not in ["low", "medium", "high"]:
             raise HTTPException(status_code=400, detail="Invalid urgency type")
-
         try:
             result = await process_emergency_request(
                 disaster_id=disasterId,
@@ -88,22 +84,17 @@ async def report_emergency(
                 latitude=latitude,
                 longitude=longitude
             )
-
             return {
                 "status": "received",
                 "message": "Emergency request processed successfully",
                 "task_id": result.get("generated_task", {}).get("task_id"),
                 "user_request_saved": True
             }
-
         except Exception as e:
-            print(f"Error processing emergency request: {e}")
             raise HTTPException(status_code=500, detail="Failed to process emergency request")
-
-    except HTTPException:
+    except HTTPException as he:
         raise
     except Exception as e:
-        print(f"Unexpected error in report_emergency: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
@@ -113,9 +104,7 @@ async def get_user_request(
     userId: str = FastAPIQuery(...),
     current_user: UserProfile = Depends(require_user)
 ):
-    # Find the user request document by disasterId and userId
     try:
-        from appwrite.query import Query
         docs = appwrite_service.databases.list_documents(
             database_id=appwrite_service.database_id,
             collection_id=appwrite_service.user_requests_collection_id,
@@ -137,9 +126,7 @@ async def delete_user_request(
     userId: str = FastAPIQuery(...),
     current_user: UserProfile = Depends(require_user)
 ):
-    # Find the user request document by disasterId and userId
     try:
-        from appwrite.query import Query
         docs = appwrite_service.databases.list_documents(
             database_id=appwrite_service.database_id,
             collection_id=appwrite_service.user_requests_collection_id,
@@ -151,9 +138,7 @@ async def delete_user_request(
         if docs["total"] == 0:
             raise HTTPException(status_code=404, detail="User request not found")
         doc = docs["documents"][0]
-        # Delete the user request document
         appwrite_service.delete_user_request_document(doc["$id"])
-        # Optionally, delete the associated task if task_id exists
         task_id = doc.get("task_id")
         if task_id:
             try:

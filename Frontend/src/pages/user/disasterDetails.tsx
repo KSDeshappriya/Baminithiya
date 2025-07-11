@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router';
 import { appwriteService } from '../../services/appwrite';
 import {
@@ -20,6 +20,7 @@ import ReactMarkdown from 'react-markdown';
 import 'leaflet/dist/leaflet.css';
 import EmergencyRequestComponent from '../../components/user/emergencyRequest';
 import ResourceMap from '../../components/private/ResourceMap';
+import L from 'leaflet';
 
 interface DisasterDocument {
     $id: string;
@@ -67,6 +68,8 @@ export const DisasterDetailsUserPage: React.FC = () => {
     const [selectedTab, setSelectedTab] = useState(0);
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     
+    const mapRef = useRef<HTMLDivElement | null>(null);
+    const leafletMapInstance = useRef<L.Map | null>(null);
 
     useEffect(() => {
         const fetchDisasterDetails = async () => {
@@ -93,6 +96,24 @@ export const DisasterDetailsUserPage: React.FC = () => {
 
         fetchDisasterDetails();
     }, [disasterId]);
+
+    useEffect(() => {
+        if (disaster && disaster.latitude && disaster.longitude && mapRef.current && !leafletMapInstance.current) {
+            leafletMapInstance.current = L.map(mapRef.current).setView([disaster.latitude, disaster.longitude], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(leafletMapInstance.current);
+            L.marker([disaster.latitude, disaster.longitude]).addTo(leafletMapInstance.current)
+                .bindPopup('Disaster Location').openPopup();
+        }
+        // Clean up map on unmount
+        return () => {
+            if (leafletMapInstance.current) {
+                leafletMapInstance.current.remove();
+                leafletMapInstance.current = null;
+            }
+        };
+    }, [disaster]);
 
     const formatTimeAgo = (timestamp: number) => {
         const now = Math.floor(Date.now() / 1000);
@@ -292,6 +313,14 @@ export const DisasterDetailsUserPage: React.FC = () => {
                                                         </div>
                                                     </div>
                                                 )}
+                                            </div>
+                                        )}
+
+                                        {/* Leaflet Map for Disaster Location */}
+                                        {disaster.latitude && disaster.longitude && (
+                                            <div className="mt-6">
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">Disaster Location</h3>
+                                                <div ref={mapRef} id="leaflet-map" style={{ height: '300px', width: '100%', borderRadius: '0.75rem', overflow: 'hidden' }}></div>
                                             </div>
                                         )}
 

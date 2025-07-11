@@ -19,7 +19,6 @@ import {
     EyeIcon,
     CalendarIcon,
     ChatBubbleLeftRightIcon,
-    PlusIcon
 } from '@heroicons/react/24/outline';
 import { Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogPanel } from '@headlessui/react';
 import ReactMarkdown from 'react-markdown';
@@ -499,13 +498,6 @@ export const ReportDetailsPage: React.FC = () => {
                                     Quick Actions
                                 </h3>
                                 <div className="space-y-3">
-                                    <Link
-                                        to={`/gov/disaster/${disasterId}/addResource`}
-                                        className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                                    >
-                                        <PlusIcon className="w-4 h-4 mr-2" />
-                                        Add Resource
-                                    </Link>
                                     <button
                                         onClick={handleShare}
                                         className="w-full flex items-center justify-center px-4 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-all duration-200"

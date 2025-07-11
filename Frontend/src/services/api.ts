@@ -12,7 +12,7 @@ class ApiService {
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: API_BASE_URL,
-      timeout: 10000,
+      timeout: 60000, // increased from 10000 to 60000ms (60 seconds)
       headers: {
         'Content-Type': 'application/json',
       },
@@ -44,7 +44,6 @@ class ApiService {
       (response: AxiosResponse) => response,
       (error) => {
         if (error.response?.status === 401) {
-          console.log('401 Unauthorized, clearing token');
           this.clearToken();
           // Redirect to login page
           window.location.href = '/auth/signin';
