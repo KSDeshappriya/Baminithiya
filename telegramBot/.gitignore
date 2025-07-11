@@ -1,0 +1,8 @@
+.env
+.venv
+__pycache__
+report.html
+.pytest_cache
+*.session
+*.session-journal
+config.py

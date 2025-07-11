@@ -139,6 +139,18 @@ uv pip install -r requirements.txt
 mcp install server.py
 ```
 
+## Telegram Bot
+
+Beminithiya includes a Telegram bot that allows users to:
+- Find disasters near a specified address
+- Share their location to find nearby emergencies
+- Get quick access to disaster information via Telegram
+
+The bot integrates with the disaster management API and provides user-friendly commands and responses.
+
+For setup instructions and more details, see the [Telegram Bot README](telegramBot/README.md).
+
+
 ## AI Models (.output_models Folder)
 
 The model files used to train and run models for disaster detection and people counting are located in `Backend/.output_models/`:
