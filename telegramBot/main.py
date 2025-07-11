@@ -181,13 +181,13 @@ async def handle_location(client, message):
             people_affected = disaster.get("people_count", "Unknown")
             lat = disaster.get("latitude")
             lng = disaster.get("longitude")
-            situation = disaster.get("situation", "No details available")
+            # situation = disaster.get("situation", "No details available")
             status = disaster.get("status", "active")
             
             response += f"**{idx}. {disaster_type.title()} - {urgency.title()} Urgency**\n"
             response += f"Status: {status.title()}\n"
             response += f"People affected: {people_affected}\n"
-            response += f"Situation: {situation[:50]}{'...' if len(situation) > 50 else ''}\n"
+            # response += f"Situation: {situation[:50]}{'...' if len(situation) > 50 else ''}\n"
             
             if lat and lng:
                 map_link = create_map_link(lat, lng)
@@ -357,8 +357,7 @@ async def report_command(client, message):
     
     # Ask for emergency type
     emergency_types = [
-        "Fire", "Flood", "Earthquake", "Tsunami", 
-        "Landslide", "Hurricane", "Tornado", "Other"
+        "Fire", "Flood", "Earthquake", "Storm", "Other"
     ]
     
     buttons = []
@@ -569,8 +568,8 @@ async def handle_report_location(client, message):
         
         # Ask for an optional image
         await message.reply(
-            "If you have a photo of the emergency, please upload it now.\n"
-            "Or type /skip to submit the report without an image."
+            "Which you have a photo of the emergency, please upload it now."
+            # "Or type /skip to submit the report without an image."
         )
         
         # Update the session state
@@ -687,39 +686,39 @@ async def handle_report_photo(client, message):
         )
 
 # Handle /skip command for emergency reports without images - improved version
-@app.on_message(filters.command("skip") & filters.private)
-async def skip_image_upload(client, message):
-    user_id = message.from_user.id
+# @app.on_message(filters.command("skip") & filters.private)
+# async def skip_image_upload(client, message):
+#     user_id = message.from_user.id
     
-    # Check if we're waiting for an image for an emergency report
-    if (user_id in Config.USER_SESSIONS and 
-        Config.USER_SESSIONS[user_id].get("waiting_for_report_image") and
-        "report_data" in Config.USER_SESSIONS[user_id]):
+#     # Check if we're waiting for an image for an emergency report
+#     if (user_id in Config.USER_SESSIONS and 
+#         Config.USER_SESSIONS[user_id].get("waiting_for_report_image") and
+#         "report_data" in Config.USER_SESSIONS[user_id]):
         
-        # Set the token for API requests
-        api.set_auth_token(Config.USER_SESSIONS[user_id]["token"])
+#         # Set the token for API requests
+#         api.set_auth_token(Config.USER_SESSIONS[user_id]["token"])
         
-        # Get report data
-        report_data = Config.USER_SESSIONS[user_id]["report_data"]
+#         # Get report data
+#         report_data = Config.USER_SESSIONS[user_id]["report_data"]
         
-        # Send the report without an image
-        loading_msg = await message.reply("Submitting your emergency report...")
-        report_result = api.report_emergency(report_data)
+#         # Send the report without an image
+#         loading_msg = await message.reply("Submitting your emergency report...")
+#         report_result = api.report_emergency(report_data)
         
-        # Clean up session data
-        Config.USER_SESSIONS[user_id].pop("waiting_for_report_location", None)
-        Config.USER_SESSIONS[user_id].pop("waiting_for_report_image", None)
-        Config.USER_SESSIONS[user_id].pop("report_data", None)
-        Config.USER_SESSIONS[user_id].pop("report_step", None)
+#         # Clean up session data
+#         Config.USER_SESSIONS[user_id].pop("waiting_for_report_location", None)
+#         Config.USER_SESSIONS[user_id].pop("waiting_for_report_image", None)
+#         Config.USER_SESSIONS[user_id].pop("report_data", None)
+#         Config.USER_SESSIONS[user_id].pop("report_step", None)
         
-        if "error" in report_result:
-            await loading_msg.edit_text(f"❌ Report submission failed: {report_result['error']}")
-            return
+#         if "error" in report_result:
+#             await loading_msg.edit_text(f"❌ Report submission failed: {report_result['error']}")
+#             return
         
-        await loading_msg.edit_text(
-            "✅ Your emergency report has been submitted successfully!\n\n"
-            "Thank you for helping keep your community safe."
-        )
+#         await loading_msg.edit_text(
+#             "✅ Your emergency report has been submitted successfully!\n\n"
+#             "Thank you for helping keep your community safe."
+#         )
 
 # Cancel report command (new)
 @app.on_message(filters.command("cancel_report") & filters.private)
