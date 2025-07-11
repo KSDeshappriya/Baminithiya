@@ -1,29 +1,32 @@
-# Use official Python image with 3.12
-FROM python:3.12-slim
+FROM python:3.9-slim
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-# Set work directory
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential && \
-    rm -rf /var/lib/apt/lists/*
+# Install system dependencies required for OpenCV and YOLO
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-COPY pyproject.toml .
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir 'uvicorn[standard]' && \
-    pip install --no-cache-dir .
+# Copy requirements file first for better caching
+COPY requirements.txt .
 
-# Copy project files
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application
 COPY . .
 
-# Expose port (FastAPI default)
+# Create a .env file during build if it doesn't exist
+# Note: In production, you should use environment variables or secrets management
+RUN touch .env
+
+# Expose the port the app runs on
 EXPOSE 8000
 
-# Start FastAPI app with fastapi run
-CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]
+# Command to run the application
+CMD ["fastapi", "run", "main.py"]
