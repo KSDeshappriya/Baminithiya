@@ -49,7 +49,7 @@ export const WorldMap = forwardRef(function WorldMap({ disasters, activeTab }: W
       center={center}
       zoom={zoom}
       style={{ height: '400px', width: '100%' }}
-      className="rounded-lg"
+      className="rounded-lg border border-gray-200 dark:border-gray-700 transition-colors duration-300"
     >
       <MapController ref={ref} center={center} zoom={zoom} />
       <TileLayer
@@ -62,22 +62,22 @@ export const WorldMap = forwardRef(function WorldMap({ disasters, activeTab }: W
           position={[disaster.latitude, disaster.longitude]}
         >
           <Popup>
-            <div className="p-2">
+            <div className="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg transition-colors duration-300 min-w-[220px]">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{getEmergencyIcon(disaster.emergency_type)}</span>
-                <h3 className="font-semibold text-gray-900 capitalize">
+                <h3 className="font-semibold text-gray-900 dark:text-white capitalize transition-colors duration-300">
                   {disaster.emergency_type} Emergency
                 </h3>
               </div>
-              <p className="text-sm text-gray-600 mb-2">{disaster.situation}</p>
-              <div className="space-y-1 text-xs text-gray-500">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 transition-colors duration-300">{disaster.situation}</p>
+              <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-300">
                 <div className="flex items-center gap-1">
                   <span className="font-medium">Location:</span>
                   {disaster.location}
                 </div>
                 <div className="flex items-center gap-1">
                   <span className="font-medium">Urgency:</span>
-                  <span className={`px-1 py-0.5 rounded text-white text-xs ${
+                  <span className={`px-1 py-0.5 rounded text-white text-xs transition-colors duration-300 ${
                     disaster.urgency_level === 'high' ? 'bg-red-500' :
                     disaster.urgency_level === 'medium' ? 'bg-yellow-500' :
                     'bg-green-500'

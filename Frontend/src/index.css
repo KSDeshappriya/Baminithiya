@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Lower Leaflet's z-index so modals always appear above */
 .leaflet-container {

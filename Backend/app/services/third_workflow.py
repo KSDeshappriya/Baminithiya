@@ -235,8 +235,10 @@ def save_task_to_db(state: EmergencyRequestState) -> EmergencyRequestState:
 
 
 def save_user_request(state: EmergencyRequestState) -> EmergencyRequestState:
+    user_id = state["user_id"]
+    disaster_id = state["disaster_id"]
     user_request_data = {
-        "disaster_id": state["disaster_id"],
+        "disaster_id": disaster_id,
         "help": state["help"],
         "urgency_type": state["urgency_type"],
         "latitude": state["latitude"],
@@ -247,10 +249,33 @@ def save_user_request(state: EmergencyRequestState) -> EmergencyRequestState:
         "feedback": None,
         "assigned_roles": state["generated_task"]["roles"],
         "ai_reasoning": state["generated_task"].get("ai_reasoning", "No reasoning provided"),
-        "userId": state["user_id"],
+        "userId": user_id,
     }
     try:
-        appwrite_service.save_user_request_document(state["user_id"], user_request_data)
+        # Try to delete any existing request for this user
+        try:
+            appwrite_service.delete_user_request_document(user_id)
+        except Exception as e:
+            # It's okay if there was no previous request
+            pass
+        # Delete any existing tasks for this user and disaster
+        try:
+            existing_tasks = appwrite_service.list_tasks_by_user_and_disaster(user_id, disaster_id)
+            for task in existing_tasks:
+                task_id = task.get("$id") or task.get("task_id")
+                if task_id:
+                    try:
+                        appwrite_service.databases.delete_document(
+                            database_id=appwrite_service.database_id,
+                            collection_id=appwrite_service.tasks_collection_Id,
+                            document_id=task_id
+                        )
+                    except Exception as e:
+                        print(f"Error deleting task {task_id}: {e}")
+        except Exception as e:
+            print(f"Error listing/deleting tasks for user {user_id} and disaster {disaster_id}: {e}")
+        # Save the new request with user_id as the document ID
+        appwrite_service.save_user_request_document(user_id, user_request_data)
     except Exception as e:
         print(f"Error saving user request: {e}")
     return {**state, "user_request_data": user_request_data}

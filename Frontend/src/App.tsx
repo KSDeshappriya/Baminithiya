@@ -27,6 +27,8 @@ import { FirstRespondersDashboard } from './pages/fr/frdashboard';
 import { DisasterDetailsFr } from './pages/fr/disasterDetailsfr';
 import Navbar from './components/auth/Navbar';
 import Footer from './components/public/Footer';
+import AnalyticsPage from './pages/gov/analytics';
+import Documentation from './pages/public/Documentation';
 
 function App() {
   
@@ -38,6 +40,12 @@ function App() {
       <Route path="/public/" element={
         <PublicRoute>
           <Home />
+        </PublicRoute>
+      } />
+
+      <Route path="/public/documentation" element={
+        <PublicRoute>
+          <Documentation />
         </PublicRoute>
       } />
 
@@ -72,6 +80,13 @@ function App() {
       <Route path="/gov/" element={
         <GovernmentRoute>
           <GovernmentDashboard />
+        </GovernmentRoute>
+      } />
+
+      {/* Government Analytics Route */}
+      <Route path="/gov/analytics" element={
+        <GovernmentRoute>
+          <AnalyticsPage />
         </GovernmentRoute>
       } />
 

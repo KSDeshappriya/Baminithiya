@@ -369,3 +369,18 @@ class AppwriteService:
             )
         except AppwriteException as e:
             raise Exception(f"Failed to delete user request: {e.message}")
+
+    def list_tasks_by_user_and_disaster(self, user_id: str, disaster_id: str) -> list:
+        """List tasks for a given user_id and disaster_id from the tasks collection."""
+        try:
+            documents = self.databases.list_documents(
+                database_id=self.database_id,
+                collection_id=self.tasks_collection_Id,
+                queries=[
+                    Query.equal("user_id", user_id),
+                    Query.equal("disaster_id", disaster_id)
+                ]
+            )
+            return documents.get("documents", [])
+        except AppwriteException as e:
+            raise Exception(f"Failed to list tasks: {e.message}")

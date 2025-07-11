@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -27,6 +27,15 @@ function LocationMarker({ position, setPosition }: { position: [number, number],
     },
   });
   return <Marker position={position} icon={markerIcon} />;
+}
+
+// Helper to fly to new position when props change
+function FlyToLocation({ position }: { position: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.flyTo(position, map.getZoom());
+  }, [position, map]);
+  return null;
 }
 
 const PickLocation: React.FC<PickLocationProps> = ({ latitude, longitude, onChange }) => {
@@ -58,6 +67,7 @@ const PickLocation: React.FC<PickLocationProps> = ({ latitude, longitude, onChan
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        <FlyToLocation position={mapPosition} />
         <LocationMarker position={mapPosition} setPosition={handleMapPositionChange} />
       </MapContainer>
     </div>

@@ -68,45 +68,45 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
       case 'pending':
         return `${base} bg-yellow-100 text-yellow-800`;
       case 'complete':
-        return `${base} bg-green-100 text-green-800`;
+        return `${base} bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400`;
       case 'cancel':
-        return `${base} bg-red-100 text-red-800`;
+        return `${base} bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400`;
       default:
-        return `${base} bg-gray-100 text-gray-800`;
+        return `${base} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400`;
     }
   };
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
+    <div className="p-4 max-w-3xl mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-md">
       {loading ? (
         <div className="flex flex-col items-center justify-center mt-20">
           <svg className="animate-spin h-8 w-8 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-          <span className="text-gray-600 text-lg">Loading tasks...</span>
+          <span className="text-gray-600 dark:text-gray-300 text-lg">Loading tasks...</span>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center mt-20">
-          <span className="text-red-500 text-lg font-semibold">{error}</span>
+          <span className="text-red-600 dark:text-red-400 text-lg font-semibold">{error}</span>
         </div>
       ) : tasks.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-20">
-          <span className="text-gray-500 text-lg">No tasks available</span>
+          <span className="text-gray-500 dark:text-gray-400 text-lg">No tasks available</span>
         </div>
       ) : (
         <ul className="space-y-3">
           {tasks.map((task) => (
             <li
               key={task.task_id}
-              className="flex items-start gap-3 p-3 border-l-4 border-blue-400 bg-white rounded-lg shadow-sm hover:shadow-md transition group"
+              className="flex items-start gap-3 p-3 border border-gray-200 dark:border-gray-900 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow-sm hover:shadow-md transition group"
             >
               <div className="flex-shrink-0 mt-1">
                 <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-gray-900" title={task.description}>{task.description}</h3>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white" title={task.description}>{task.description}</h3>
                   <span className={getStatusBadge(task.status) + ' text-xs px-2 py-0.5 ml-2'}>{task.status.toUpperCase()}</span>
                 </div>
-                <div className="flex flex-wrap gap-2 text-xs text-gray-600 mt-1">
+                <div className="flex flex-wrap gap-2 text-xs text-gray-600 dark:text-gray-300 mt-1">
                   <span className="flex items-center gap-1"><svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6"/></svg>{task.emergency_type}</span>
                   <span className="flex items-center gap-1"><svg className="w-4 h-4 text-pink-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M16 16l4 4M8 16l-4 4"/></svg>{task.people_count}</span>
                   <span className="flex items-center gap-1"><svg className="w-4 h-4 text-yellow-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3"/></svg>{task.urgency_level}</span>
@@ -114,7 +114,7 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
                     ? task.roles.map(r => (
                         <span
                           key={r}
-                          className="inline-block bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-medium border border-blue-100"
+                          className="inline-block bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full text-[10px] font-medium border border-blue-100 dark:border-blue-900/30"
                         >
                           {roleLabelMap[r] ?? r}
                         </span>
@@ -126,18 +126,18 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
                       href={`https://www.google.com/maps?q=${task.latitude},${task.longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 underline hover:text-blue-800 truncate"
+                      className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300 truncate"
                     >
                       Map
                     </a>
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <label className="text-xs text-gray-500">Status:</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">Status:</label>
                   <select
                     value={task.status}
                     onChange={(e) => handleStatusChange(task.task_id, e.target.value)}
-                    className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 bg-gray-50 text-gray-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-200 transition disabled:opacity-60 disabled:cursor-not-allowed"
                     disabled={!!updating}
                     style={{ minWidth: 80 }}
                   >
@@ -148,7 +148,7 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
                     ))}
                   </select>
                   {task.action_done_by && (
-                    <span className="bg-green-50 border border-green-100 rounded px-2 py-1 text-green-700 text-xs flex items-center gap-1 ml-2">
+                    <span className="bg-green-50 dark:bg-green-900/30 border border-green-100 dark:border-green-900/30 rounded px-2 py-1 text-green-700 dark:text-green-400 text-xs flex items-center gap-1 ml-2">
                       <svg className="w-3 h-3 text-green-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
                       <span>By: {task.action_done_by}</span>
                     </span>
