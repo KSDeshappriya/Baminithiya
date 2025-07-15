@@ -1,22 +1,55 @@
-version: '3.8'
+# Docker Compose configuration
+# Note: Compose can now delegate builds to Docker Buildx for better performance.
+# See: https://docs.docker.com/compose/compose-file/build/
 
 services:
-  backend:
-    build:
-      context: ./Backend
-      dockerfile: Dockerfile
-    container_name: disa-backend
+  backend1:
+    build: ./Backend
+    environment:
+      - SERVER_NAME=backend1
     ports:
-      - "8000:8000"
-    restart: unless-stopped
+      - "8001:8000"
+    networks:
+      - app-network
+
+  backend2:
+    build: ./Backend
+    environment:
+      - SERVER_NAME=backend2
+    ports:
+      - "8002:8000"
+    networks:
+      - app-network
+
+  backend3:
+    build: ./Backend
+    environment:
+      - SERVER_NAME=backend3
+    ports:
+      - "8003:8000"
+    networks:
+      - app-network
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "8000:80"
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    networks:
+      - app-network
 
   frontend:
-    build:
-      context: ./Frontend
-      dockerfile: Dockerfile
-    container_name: disa-frontend
+    build: ./Frontend
+    environment:
+      - BACKEND_URL=http://localhost:8000/
     ports:
       - "5173:5173"
-    depends_on:
-      - backend
-    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
