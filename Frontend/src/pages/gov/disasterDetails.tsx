@@ -37,8 +37,8 @@ interface DisasterDocument {
     submitted_time?: number;
     latitude?: number;
     longitude?: number;
+    government_report?: string;
     image_url?: string;
-    citizen_survival_guide?: string;
     image?: string;
     [key: string]: unknown;
 }
@@ -441,7 +441,7 @@ export const DisasterDetailsGovPage: React.FC = () => {
                                                             <DisclosurePanel className="px-6 pb-4 pt-6">
                                                                 <div className="bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-xl p-6">
                                                                     <div className="prose prose-blue dark:prose-invert max-w-none">
-                                                                        <ReactMarkdown>{disaster.citizen_survival_guide}</ReactMarkdown>
+                                                                        <ReactMarkdown>{disaster.government_report}</ReactMarkdown>
                                                                     </div>
                                                                 </div>
                                                             </DisclosurePanel>
